@@ -7,16 +7,20 @@
   <title>Labb1</title>
   <meta name="description" content="Labb1">
   <meta name="author" content="Filer358, Jimbj685">
+  <link rel="stylesheet" href="css/style.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="css/styles.css">
 
 </head>
 <body>
     <header></header>
-    <section>
-        <form action="#"> <input type="text"> <input type="submit" onclick="submit()" value="Post" ></form>
-        <article id="post_1">
-            <p id="post_1_text"></p>
+    <form action="#"> 
+        <input type="text" id="text_post"> 
+        <input type="submit" onclick="submit" value="Post" id="submit">
+        <span id="error_span"></span>
+    </form>
+    <section id="articles">
+        <article id="post_dummy">
+            <p id="post_dummy_text"></p>
             <form>Read?<input type="checkbox"></form>
         </article>
     </section>    
