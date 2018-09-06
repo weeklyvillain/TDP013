@@ -13,11 +13,12 @@ $(document).ready(function() {
         
         if (text.length > 0){
             if(text.length <= 140){
-                $("#articles").prepend(`<article id='post_${amount}'><p id='post_${amount}_text'>${text}</p><form><span id='read_${amount} ' value='0'>Unread</span><input type='checkbox' id='read_box_${amount}' class='read_box'></form></article>`);
+                $("#articles").prepend(`<article id='post_${amount}'><p id='post_${amount}_text'>${text}</p><span id='read_${amount}'>Unread</span><form><input type='checkbox' id='read_box_${amount}' class='read_box'></form></article>`);
                 var text = $("#text_post").val("");
                 $(".read_box").change(function(){
                     click_read(this);
                 });
+                amount = amount + 1;
             }else{
                 $("#error_span").html("Your message is too long!");
             };
@@ -32,16 +33,11 @@ $(document).ready(function() {
 
 function click_read(current){
     var number = $(current).attr("id").split("_")[2];
-    alert("test");
-    if($("read_"+number).attr("value") == '0'){
-        alert("Hej");
-        $("read_"+number).text("Read");
-        alert("hej2");
-        $("read_"+number).attr("value", '1');
+    alert(number);
+    if($("#read_"+number).text() == 'Unread'){
+        $("#read_"+number).text("Read");
     }else{
-        alert("test2");
-        $("read_"+number).text("Unread");
-        $("read_"+number).attr("value", '0');
+        $("#read_"+number).text("Unread");
     };
 };
 
