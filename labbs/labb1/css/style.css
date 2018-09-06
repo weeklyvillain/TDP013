@@ -17,20 +17,33 @@ section form input {
   margin: auto;
 }
 
+#text_post{
+  width:65%;
+}
+
+.post_text {
+  width: 75%;
+  word-break: break-all;
+}
 /* för list objekt */
 article {
-  width: 80%;
+  width: auto;
   height: auto;
-  margin: auto;
+  margin-top:1%;
   background-color: lightblue;
+  border: 1px solid black;
   clear: both;
 }
 
 article p {
   float:left;
   display: inline-block;
-  /*width: 80%;*/
+  width: 80%;
   height: auto;
+}
+
+article span {
+  float:right;
 }
 
 article form {
