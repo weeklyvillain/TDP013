@@ -1,0 +1,43 @@
+section{
+  width: 60%;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+section form {
+  margin-top: 5%;
+  width: 50%;
+  height: auto;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+section form input {
+  margin: auto;
+}
+
+/* för list objekt */
+article {
+  width: 80%;
+  height: auto;
+  margin: auto;
+  background-color: lightblue;
+  clear: both;
+}
+
+article p {
+  float:left;
+  display: inline-block;
+  /*width: 80%;*/
+  height: auto;
+}
+
+article form {
+  margin-right: 0%;
+  width: 10%;
+}
+
+article form input {
+  margin-left: 10%;
+}
