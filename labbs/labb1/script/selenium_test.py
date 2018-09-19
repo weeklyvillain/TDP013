@@ -1,6 +1,9 @@
 import unittest
+import os
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+
+CURRENT_PATH = os.getcwd()
 
 class PythonOrgSearch(unittest.TestCase):
     @classmethod
@@ -14,7 +17,7 @@ class PythonOrgSearch(unittest.TestCase):
     def test_open_page(self):
         #Testing whether page is open
         
-            self.driver.get("file:///home/spathatos/Projects/TDP013/labbs/labb1/version_jquery.html")
+            self.driver.get("file://"+CURRENT_PATH+"/version_jquery.html")
             self.assertIn("Wittier", self.driver.title)
         
         #Testing whether we can write to the text box

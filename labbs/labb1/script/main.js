@@ -1,7 +1,3 @@
-function submit(){
-    alert("hej");
-};
-
 $(document).ready(function() {
     $("#post_dummy").hide();
     var amount = 0;
