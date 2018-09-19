@@ -3,7 +3,7 @@ import os
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
-CURRENT_PATH = os.getcwd()
+CURRENT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class PythonOrgSearch(unittest.TestCase):
     @classmethod
@@ -15,8 +15,8 @@ class PythonOrgSearch(unittest.TestCase):
         self.driver.close()
 
     def test_open_page(self):
+
         #Testing whether page is open
-        
             self.driver.get("file://"+CURRENT_PATH+"/version_jquery.html")
             self.assertIn("Wittier", self.driver.title)
         
@@ -24,6 +24,7 @@ class PythonOrgSearch(unittest.TestCase):
             text_box = self.driver.find_element_by_id("text_post")
             text_box.send_keys("Hello World!")
             self.assertEqual("Hello World!", text_box.get_attribute("value"))
+
 
     def test_send_posts(self):
         self.driver.get("file://"+CURRENT_PATH+"/version_jquery.html")
