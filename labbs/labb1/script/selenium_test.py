@@ -4,7 +4,7 @@ from selenium.webdriver.common.keys import Keys
 
 class PythonOrgSearch(unittest.TestCase):
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(self):
         self.driver = webdriver.Firefox()
 
     def test_open_page(self):
