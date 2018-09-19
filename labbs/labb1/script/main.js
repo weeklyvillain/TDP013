@@ -29,7 +29,7 @@ $(document).ready(function() {
 
 function click_read(current){
     var number = $(current).attr("id").split("_")[2];
-    if($("#read_"+number).text() == 'Unread'){
+    if($(current).prop("checked")){
         $("#read_"+number).text("Read");
         $("#post_"+number).css("background-color", "green")
     }else{
