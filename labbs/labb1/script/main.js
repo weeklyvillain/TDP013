@@ -6,7 +6,7 @@ $(document).ready(function() {
         var text = $("#text_post").val();
         if (text.length > 0){
             if(text.length <= 140){
-                $("#articles").prepend(`<article id='post_${amount}'><p id='post_${amount}_text' class="post_text">${text}</p><span id='read_${amount}'>Unread</span><form><input type='checkbox' id='read_box_${amount}' class='read_box'></form></article>`);
+                $("#articles").prepend(`<article id='post_${amount}' class='posts'><p id='post_${amount}_text' class="post_text">${text}</p><span id='read_${amount}'>Unread</span><form><input type='checkbox' id='read_box_${amount}' class='read_box'></form></article>`);
                 $("#text_post").val("");
                 
                 $(".read_box").unbind();
