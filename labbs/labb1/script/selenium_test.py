@@ -92,7 +92,7 @@ class PythonOrgSearch(unittest.TestCase):
         check_box = self.driver.find_element_by_id("read_box_1")
         check_box.click()
         check_box.click()
-        self.assertEqual(post.value_of_css_property("background-color"), "'rgb(173, 216, 230)'")
+        self.assertEqual(post.value_of_css_property("background-color"), "rgb(173, 216, 230)")
 
     def test_refresh(self): #Testing whether a refresh destroys all posts
         self.driver.get("file://"+CURRENT_PATH+"/version_jquery.html")
