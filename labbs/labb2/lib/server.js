@@ -2,6 +2,20 @@ var express = require('express');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
 
+
+function get_all(req, res){
+    MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+        if (err) throw err;
+        var dbo = db.db("tdp013");
+        dbo.collection("Posts").find({}).toArray(function(err, result) {
+            if (err) throw err;
+            console.log(result);
+            db.close();
+            return result;
+        });   
+    });
+};
+
 function start() {
     var app = express(); 
 
@@ -10,7 +24,7 @@ function start() {
     }); 
 
     app.get('/', function (req, res, next) { 
-        res.send(`<!doctype html>
+        res.status(200).send(`<!doctype html>
         <html>
         <body>
             <form action='/save' method='get'>
@@ -31,8 +45,8 @@ function start() {
                 console.log(res);
                 db.close();
               });
-
             });
+            res.redirect("/"); 
     });
 
     app.get('/flag', function(req, res, next){
@@ -46,20 +60,13 @@ function start() {
                 console.log(res);
                 db.close();
             });
+            res.status(200).send("");
         });
     });
 
     app.get('/getall', function(req, res, next){
-        MongoClient.connect("mongodb://localhost:27017", function (err, db) {
-            if (err) throw err;
-            var dbo = db.db("tdp013");
-            dbo.collection("Posts").find({}).toArray(function(err, res) {
-                if (err) throw err;
-                console.log(res);
-                db.close();
-              });   
-
-        });
+       var result = get_all(res,req);
+       res.status(200).send("All Messages gotten!");
     });
 
     app.delete("*", function(req, res){
