@@ -1,5 +1,6 @@
 var express = require('express'); 
 var MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectId;
 
 function start() {
     var app = express(); 
@@ -27,29 +28,38 @@ function start() {
             var message_obj = { Message: req.query.message, Flag: false };
             dbo.collection("Posts").insertOne(message_obj, function(err, res) {
                 if (err) throw err;
-                console.log("1 document inserted");  
+                console.log(res);
+                db.close();
               });
-              db.close();
+
             });
     });
 
     app.get('/flag', function(req, res, next){
-        console.log(req.body['message']);
-        console.log("Flagging message!");
+        MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+            if (err) throw err;
+            var dbo = db.db("tdp013");
+            var my_query = {_id: ObjectId(req.query.id)};
+            var new_values = {$set:{Flag: true}};
+            dbo.collection("Posts").updateOne(my_query, new_values, function(err, res) {
+                if (err) throw err;
+                console.log(res);
+                db.close();
+            });
+        });
     });
 
     app.get('/getall', function(req, res, next){
         MongoClient.connect("mongodb://localhost:27017", function (err, db) {
             if (err) throw err;
-            dbo.collection("Posts").find(function(err, res) {
-                console.log(res);
-            });    
-            db.close();
-        });
             var dbo = db.db("tdp013");
+            dbo.collection("Posts").find({}).toArray(function(err, res) {
+                if (err) throw err;
+                console.log(res);
+                db.close();
+              });   
 
-        console.log("Getting all messages!");
-        res.status(200).send("post1");
+        });
     });
 
     app.delete("*", function(req, res){
