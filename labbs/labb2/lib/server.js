@@ -1,4 +1,5 @@
 var express = require('express'); 
+var MongoClient = require('mongodb').MongoClient;
 
 function start() {
     var app = express(); 
@@ -12,9 +13,7 @@ function start() {
         <html>
         <body>
             <form action='/save' method='get'>
-                <input type='text' name='fname' /><br />
-                <input type='number' name='age' /><br />
-                <input type='file' name='photo'  /><br />
+                <input type='text' name='message' /><br />
                 <input type="submit" value="Send Request">
             </form>
         </body>
@@ -22,16 +21,32 @@ function start() {
     }); 
 
     app.get('/save', function(req, res, next){ 
-        console.log(req.body['post_body']);
-        console.log("Adding message!");
+        MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+            if (err) throw err;
+            var dbo = db.db("tdp013");
+            var message_obj = { Message: req.query.message, Flag: false };
+            dbo.collection("Posts").insertOne(message_obj, function(err, res) {
+                if (err) throw err;
+                console.log("1 document inserted");  
+              });
+              db.close();
+            });
     });
 
     app.get('/flag', function(req, res, next){
-        console.log(req.body['id']);
+        console.log(req.body['message']);
         console.log("Flagging message!");
     });
 
     app.get('/getall', function(req, res, next){
+        MongoClient.connect("mongodb://localhost:27017", function (err, db) {
+            if (err) throw err;
+            dbo.collection("Posts").find(function(err, res) {
+                console.log(res);
+            });    
+            db.close();
+        });
+            var dbo = db.db("tdp013");
 
         console.log("Getting all messages!");
         res.status(200).send("post1");
