@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 var expect  = require('chai').expect;
 var request = require('request');
 
@@ -21,13 +20,10 @@ describe('Error handling', function() {
     describe ('Main page', function() {
         it('/ should return index.html', function(done){
             request('http://localhost:3000/', function(error, response, body) {
-              request('http://localhost:3000/index.html', function(error, res, bod) {
-                expect(body).to.equal(bod);
-              });
+              //test here
+            
             done();
             });
         });
 
     });
-=======
->>>>>>> e50b6d84779714e8a156b8e5ada65403a50507fe
