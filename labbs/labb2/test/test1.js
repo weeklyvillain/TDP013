@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 var expect  = require('chai').expect;
 var request = require('request');
 
@@ -28,3 +29,5 @@ describe('Error handling', function() {
         });
 
     });
+=======
+>>>>>>> e50b6d84779714e8a156b8e5ada65403a50507fe

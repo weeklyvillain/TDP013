@@ -8,9 +8,7 @@ $(document).ready(function() {
             if(text.length <= 140){
                 $("#articles").prepend(`<article id='post_${amount}' class='posts'><p id='post_${amount}_text' class="post_text">${text}</p><span id='read_${amount}'>Unread</span><form><input type='checkbox' id='read_box_${amount}' class='read_box'></form></article>`);
                 $("#text_post").val("");
-                
-                $(".read_box").unbind();
-                $(".read_box").click(function(){
+                $("#read_box_"+amount).click(function(){
                     click_read(this);
                 });
                 amount = amount + 1;

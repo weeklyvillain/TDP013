@@ -11,7 +11,11 @@
   "dependencies": {
     "chai": "^4.2.0",
     "express": "^4.16.3",
+<<<<<<< HEAD
     "request": "^2.88.0",
+=======
+    "mongodb": "^3.1.6",
+>>>>>>> e50b6d84779714e8a156b8e5ada65403a50507fe
     "should": "^13.2.3",
     "superagent": "^4.0.0-beta.5"
   }
