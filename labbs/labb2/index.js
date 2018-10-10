@@ -6,7 +6,7 @@ function server_start(){
 };
 
 function server_stop(){
-    
+    server.close()
 };
 
 
