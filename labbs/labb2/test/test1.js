@@ -34,3 +34,15 @@ describe('Main page', function() {
         });
     });
 });
+
+
+describe('get All', function(){
+    it('git gud', function(done) {
+      chai.request(app)
+        .get('/getall')
+        .end(function(err, res) {
+          expect();
+          done();
+        })
+    });
+});
