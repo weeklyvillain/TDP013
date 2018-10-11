@@ -2,7 +2,7 @@ var server = require('./lib/server');
 
 function server_start(){
 
-    server.start(); 
+    server.start();
 };
 
 function server_stop(){

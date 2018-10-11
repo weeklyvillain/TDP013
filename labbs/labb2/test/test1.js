@@ -1,44 +1,36 @@
-var expect  = require('chai').expect;
-var request = require('request');
+var chai  = require('chai'),
+    chaiHttp = require('chai-http');
+chai.use(chaiHttp);
+var expect = chai.expect;
 var app = require('../lib/server');
-
-
-var server = app.listen(3000, "127.0.0.1",  function () {
-    var location = server.address();
-    var host = location.address;
-    var port = location.port;
-    console.log('Example app listening at http://%s:%s', host, port);
-});
 
 describe('Error handling', function() {
     it('should test status 200', function(done){
-        request('http://localhost:3000/', function(error, response, body) {
-            expect(response.statusCode).to.equal(200);
+      chai.request(app)
+        .get('/')
+        .end(function (err, res) {
+            expect(res).to.have.status(200);
             done();
         });
     });
 
     it('should test status 404', function(done){
-        request('http://localhost:3000/non_existing_page', function(error, response, body) {
-            expect(response.statusCode).to.equal(404);
+      chai.request(app)
+        .get('/none_existing')
+        .end(function (err, res) {
+            expect(res).to.have.status(404);
             done();
         });
     })
 });
 
-describe ('Main page', function() {
-    it('/ should return index.html', function(done){
-        request('http://localhost:3000/index.html', function(error, response, body) {
-
-            expect(response.request['path']).to.be.equal('/');
-        done();
+describe('Main page', function() {
+    it('index.html should return /', function(done){
+      chai.request(app)
+        .get('/index.html')
+        .end(function (err, res) {
+            expect(res['req']['path']).to.be.equal('/');
+            done();
         });
     });
 });
-
-
-
-after(function(){
-    server.close();
-});
-    
