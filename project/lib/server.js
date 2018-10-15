@@ -3,11 +3,11 @@ var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
 var cors = require('cors');
 
-    
+
     var app = express();
-    
-    app.use(cors());    
-    
+
+    app.use(cors());
+
     app.get("/index.html", function (req, res){
         res.redirect("/");
     });
@@ -92,6 +92,35 @@ var cors = require('cors');
         return flag(req, res);
     });
     app.get('/save', function(req, res){
+        return save(req, res);
+    });
+    app.get('/login', function(req, res){
+      MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+          var dbo = db.db("tdp013");
+          dbo.collection("Profiles").find({LoginName: req.query.Username, Password: req.query.Password}, function(err, result) {
+              db.close();
+              if(result){
+                res.status(200).send(true);
+              } else {
+                res.status(200).send(false);
+              }
+          });
+      });
+    });
+
+    app.get('/register', function(req, res){
+      MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+
+          var dbo = db.db("tdp013");
+          var userObj = { LoginName : req.query.Username, Password : req.query.Password, DisplayName :req.query.DisplayName, FriendsList : {}, DoB : req.query.DoB }
+          dbo.collection("Profiles").insertOne(user_obj, function(err, result) {
+              db.close();
+            });
+          });
+          res.redirect("/");
+    });
+
+    app.get('/register', function(req, res){
         return save(req, res);
     });
 
