@@ -1,8 +1,9 @@
-var server = require('./lib/server');
+var app = require('./lib/server');
 
 function server_start(){
-
-    server.start();
+    var server = app.listen(3000, function () {
+      console.log("Server runnning");
+    });
 };
 
 function server_stop(){

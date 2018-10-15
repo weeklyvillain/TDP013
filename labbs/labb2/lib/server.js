@@ -1,9 +1,13 @@
 var express = require('express');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
+var cors = require('cors');
 
+    
     var app = express();
-
+    
+    app.use(cors());    
+    
     app.get("/index.html", function (req, res){
         res.redirect("/");
     });
