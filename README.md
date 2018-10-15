@@ -7,11 +7,15 @@ Node.js
 Login
 register
 checkLogin
-search
+
 
 getProfile
 addPost
 (removePost)
 addFriend
 (removeFriend)
+getFriendsList
+editProfile
+
+search
 
