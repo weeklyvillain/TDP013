@@ -1,9 +1,9 @@
-1. Features
+1 Features
   -Login/register Page
   -Profile Page
   -Search Page
 
-2. Node.js
+2 Node.js
   -Login
   -register
   -getProfile
