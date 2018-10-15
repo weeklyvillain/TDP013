@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Input from './Input';
+import Input from './profile_page';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(<div><Input /></div>, document.getElementById('root'));

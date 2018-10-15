@@ -9,7 +9,8 @@ class Input extends Component {
 
      this.state = {
         data: '',
-        messages: []
+        profile:{},
+        posts: []
      }
 
      this.updateState = this.updateState.bind(this);
@@ -18,11 +19,11 @@ class Input extends Component {
   };
 
   updateFeed(){
-    axios.get("http://127.0.0.1:3001/getall")
+    axios.get("http://127.0.0.1:3001/getProfile",{params: {Username: 'Admin'}})
         .then(res => {
             const respones = res.data;
-            console.log(respones)
-            this.setState({messages: respones.reverse()})
+            this.setState({profile: respones})
+            this.setState({posts:respones.Posts})
         });
   }
 
@@ -72,7 +73,7 @@ class Input extends Component {
         <h4>{this.state.data.length}/140</h4>
           <Button color="primary" onClick={this.sendData}>Send!</Button>
           <ul>
-          {this.state.messages.map((message) =>
+          {this.state.posts.map((message) =>
             <li key={message._id.toString()} style= {message.Flag === true ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
             {message.Message}
             </li>
