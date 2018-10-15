@@ -98,9 +98,10 @@ var cors = require('cors');
     app.get('/login', function(req, res){
       MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
           var dbo = db.db("tdp013");
-          dbo.collection("Profiles").find({LoginName: req.query.Username, Password: req.query.Password}, function(err, result) {
+          var my_query = {LoginName: req.query.Username, Password: req.query.Password};
+          dbo.collection("Profiles").find(my_query).toArray(function(err, result) {
               db.close();
-              if(result){
+              if(result.length > 0){
                 res.status(200).send(true);
               } else {
                 res.status(200).send(false);
@@ -124,7 +125,7 @@ var cors = require('cors');
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
 
-            dbo.collection('Profiles').aggregate([   
+            dbo.collection('Profiles').aggregate([
                 {$lookup:{
                     from: 'Posts',
                     localField: 'LoginName',
@@ -141,7 +142,7 @@ var cors = require('cors');
     });
 
     //app.get('/removePost', function(req, res){});
-    
+
     app.get('/addFriend', function(req, res){
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
@@ -150,14 +151,23 @@ var cors = require('cors');
                 db.close();
             });
             res.redirect("/");
-        }); 
+        });
     });
-    
+
     //app.get('/removeFriend', function(req, res){});
-    
+
     //app.get('/editProfile', function(req, res){});
-    
-    //app.get('/search', function(req, res){});
+
+    app.get('/search', function(req, res){
+      MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+          var dbo = db.db("tdp013");
+          dbo.collection("Profiles").find({DisplayName: req.query.Username}).toArray(function(err, result) {
+              db.close();
+              res.send(result);
+          });
+      });
+
+    });
 
     app.post("*", function(req, res){
         res.status(405).send("Status: 405 Wrong Method - Post");
