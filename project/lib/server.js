@@ -74,7 +74,7 @@ var cors = require('cors');
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
 
             var dbo = db.db("tdp013");
-            var message_obj = { Message: req.query.message, Flag: false };
+            var message_obj = { Message: req.query.message, Flag: false, UserPage: req.query.UserPage, UserPosted: req.query.UserPosted};
             dbo.collection("Posts").insertOne(message_obj, function(err, result) {
 
                 db.close();
@@ -83,7 +83,6 @@ var cors = require('cors');
             res.redirect("/");
     }
 
-
     app.get('/getall', function(req, res){
         return get_all(req, res);
     });
@@ -91,9 +90,11 @@ var cors = require('cors');
     app.get('/flag', function(req, res){
         return flag(req, res);
     });
+
     app.get('/save', function(req, res){
         return save(req, res);
     });
+
     app.get('/login', function(req, res){
       MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
           var dbo = db.db("tdp013");
@@ -110,7 +111,6 @@ var cors = require('cors');
 
     app.get('/register', function(req, res){
       MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-
           var dbo = db.db("tdp013");
           var userObj = { LoginName : req.query.Username, Password : req.query.Password, DisplayName :req.query.DisplayName, FriendsList : {}, DoB : req.query.DoB }
           dbo.collection("Profiles").insertOne(user_obj, function(err, result) {
@@ -120,9 +120,44 @@ var cors = require('cors');
           res.redirect("/");
     });
 
-    app.get('/register', function(req, res){
-        return save(req, res);
+    app.get('/getProfile', function(req, res){
+        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+            var dbo = db.db("tdp013");
+
+            dbo.collection('Profiles').aggregate([   
+                {$lookup:{
+                    from: 'Posts',
+                    localField: 'LoginName',
+                    foreignField: 'User',
+                    as: 'Posts'
+                }},
+                {$match:{
+                    LoginName: req.query.Username
+                }}
+            ], function(err, result){
+                res.send(result);
+            });
+        });
     });
+
+    //app.get('/removePost', function(req, res){});
+    
+    app.get('/addFriend', function(req, res){
+        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+            var dbo = db.db("tdp013");
+            var my_query = {LoginName: ObjectId(req.query.Username)};
+            dbo.collection("Profiles").update(my_query, {$push:{FriendsList: req.query.Friend}}, function(err, result) {
+                db.close();
+            });
+            res.redirect("/");
+        }); 
+    });
+    
+    //app.get('/removeFriend', function(req, res){});
+    
+    //app.get('/editProfile', function(req, res){});
+    
+    //app.get('/search', function(req, res){});
 
     app.post("*", function(req, res){
         res.status(405).send("Status: 405 Wrong Method - Post");
