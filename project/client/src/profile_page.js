@@ -11,7 +11,8 @@ class Profile extends Component {
 		this.state = {
 				data: '',
 				profile:{LoginName: "", DisplayName: "", FriendsList:{}},
-				posts: []
+				posts: [],
+				notExist: false
 		}
 
 		this.updateCounter = this.updateCounter.bind(this);
@@ -29,10 +30,14 @@ class Profile extends Component {
 	}
 
 	getProfile(){
-		axios.get("http://127.0.0.1:3001/getProfile",{params: {Username: sessionStorage.getItem('LoginName')}})
+		axios.get("http://127.0.0.1:3001/getProfile",{params: {Username: this.props.match.url.substring(1)}})
 		.then(res => {
-			const profile = res.data[0];
-			this.setState({profile: profile, posts: profile.Posts.reverse()})
+			if(res.data.length === 0){
+				this.setState({notExist: true});
+			}else{
+				const profile = res.data[0];
+				this.setState({profile: profile, posts: profile.Posts.reverse()})
+			}
 		});
 	}
 
@@ -40,7 +45,6 @@ class Profile extends Component {
 		axios.get("http://127.0.0.1:3001/getAll",{params: {UserPage: this.state.profile.LoginName}})
 		.then(res => {
 			const responses = res.data;
-			console.log(responses)
 			this.setState({posts:responses.reverse()});
 		});
 	}
@@ -88,8 +92,11 @@ class Profile extends Component {
 		this.updateFeed();
 	}
 
-	render() {
-		if(sessionStorage.getItem("LoggedIn") === "true"){
+	checkExists(){
+		
+		if(this.state.notExist === true){
+			return ("Hm... there does not seem to be anything here"  );
+		}else{
 			return (
 				<div>
 					<button onClick={this.logout}>Logout!</button>
@@ -116,6 +123,12 @@ class Profile extends Component {
 						</ul>
 				</div>
 			);
+		}
+	}
+
+	render() {
+		if(sessionStorage.getItem("LoggedIn") === "true"){
+			return this.checkExists();
 		}else{
 			return (
 				<Redirect
@@ -125,7 +138,7 @@ class Profile extends Component {
 		/>)
 		}		
 	}
-}
+}	
 
 
 export default Profile;

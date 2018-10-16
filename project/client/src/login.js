@@ -62,8 +62,7 @@ class Login extends Component {
       return (
           <Redirect
           to={{
-            pathname: "/profile",
-            state:{viewedProfile: this.state.Username}
+            pathname: sessionStorage.getItem("LoginName"),
           }}
           />)
       }else{

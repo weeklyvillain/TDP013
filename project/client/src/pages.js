@@ -9,8 +9,9 @@ const Pages = () => (
   <BrowserRouter>
     <Switch>
       <Route exact path='/' component={Login} />
-      <Route path='/profile' component={Profile} />
+
       <Route path='/search' component={Search} />
+      <Route path='/:id' component={Profile} />
       </Switch>
   </BrowserRouter>
 )
