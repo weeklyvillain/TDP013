@@ -28,7 +28,7 @@ var cors = require('cors');
     function get_all(req, res, next){
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
-            dbo.collection("Posts").find({}).toArray(function(err, result) {
+            dbo.collection("Posts").find({UserPage: req.query.UserPage}).toArray(function(err, result) {
                 db.close();
                 res.status(200).send(result);
             });
@@ -45,12 +45,10 @@ var cors = require('cors');
           return;
       }
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-
             var dbo = db.db("tdp013");
             var my_query = {_id: ObjectId(req.query.id)};
             var new_values = {$set:{Flag: true}};
             dbo.collection("Posts").updateOne(my_query, new_values, function(err, result) {
-
                 if(result.result.nModified == 0 ){
                     res.status(400).send("Status: 400 Wrong Parameters");
                     db.close()
@@ -72,11 +70,9 @@ var cors = require('cors');
           return;
       }
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-
             var dbo = db.db("tdp013");
             var message_obj = { Message: req.query.message, Flag: false, UserPage: req.query.UserPage, UserPosted: req.query.UserPosted};
             dbo.collection("Posts").insertOne(message_obj, function(err, result) {
-
                 db.close();
               });
             });
@@ -124,17 +120,17 @@ var cors = require('cors');
     app.get('/getProfile', function(req, res){
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
-            console.log(req.query.Username);
             dbo.collection('Profiles').aggregate([
                 {'$match':{'LoginName': req.query.Username}},
-                {$lookup:{
+                {'$lookup':{
                     from: 'Posts',
                     localField: 'LoginName',
                     foreignField: 'UserPage',
                     as: 'Posts'
                 }}
             ]).toArray(function(err, result){
-                    console.log(result);
+                db.close();
+                res.send(result);
             });
         });
     });
@@ -144,7 +140,7 @@ var cors = require('cors');
     app.get('/addFriend', function(req, res){
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
-            var my_query = {LoginName: ObjectId(req.query.Username)};
+            var my_query = {LoginName: req.query.LoginName};
             dbo.collection("Profiles").update(my_query, {$push:{FriendsList: req.query.Friend}}, function(err, result) {
                 db.close();
             });
