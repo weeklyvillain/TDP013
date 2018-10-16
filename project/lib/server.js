@@ -111,31 +111,29 @@ var cors = require('cors');
 
     app.get('/register', function(req, res){
       MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-          var dbo = db.db("tdp013");
-          var userObj = { LoginName : req.query.Username, Password : req.query.Password, DisplayName :req.query.DisplayName, FriendsList : {}, DoB : req.query.DoB }
-          dbo.collection("Profiles").insertOne(user_obj, function(err, result) {
-              db.close();
+            var dbo = db.db("tdp013");
+            var userObj = { LoginName : req.query.Username, Password : req.query.Password, DisplayName :req.query.DisplayName, FriendsList : {}, DoB : req.query.DoB }
+            dbo.collection("Profiles").insertOne(user_obj, function(err, result) {
+                db.close();
             });
-          });
+        });
           res.redirect("/");
     });
 
     app.get('/getProfile', function(req, res){
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
-
-            dbo.collection('Profiles').aggregate([   
+            console.log(req.query.Username);
+            dbo.collection('Profiles').aggregate([
+                {'$match':{'LoginName': req.query.Username}},
                 {$lookup:{
                     from: 'Posts',
                     localField: 'LoginName',
-                    foreignField: 'User',
+                    foreignField: 'UserPage',
                     as: 'Posts'
-                }},
-                {$match:{
-                    LoginName: req.query.Username
                 }}
-            ], function(err, result){
-                res.send(result);
+            ]).toArray(function(err, result){
+                    console.log(result);
             });
         });
     });
