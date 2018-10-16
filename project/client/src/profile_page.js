@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import './App.css';
-import { Button } from 'reactstrap';
+import { Button, ListGroup, ListGroupItem, InputGroup, InputGroupAddon, Input, Navbar, NavbarBrand, NavItem, NavLink, Nav} from 'reactstrap';
 import {Redirect}  from "react-router-dom";
+import './profile_page.css';
 const axios = require('axios');
 
 class Profile extends Component {
@@ -93,34 +93,55 @@ class Profile extends Component {
 	}
 
 	checkExists(){
-		
+
 		if(this.state.notExist === true){
 			return ("Hm... there does not seem to be anything here"  );
 		}else{
 			return (
 				<div>
-					<button onClick={this.logout}>Logout!</button>
-					<h1>Welcome to {sessionStorage.getItem('LoginName') === this.state.profile.LoginName ? (" your home"):(" " + this.state.profile.DisplayName + "s ")}page!</h1>
-						<div className = "Input">
+				<Navbar color="light" expand="md">
+				<NavbarBrand href="/">witter</NavbarBrand>
+				<h4>Welcome to {sessionStorage.getItem('LoginName') === this.state.profile.LoginName ? (" your home"):(" " + this.state.profile.DisplayName + "s ")}page!</h4>
+					<Nav className="ml-auto" navbar>
+						<NavItem>
+							<NavLink>Search</NavLink>
+						</NavItem>
+						<NavItem>
+							<NavLink href="/" onClick={this.logout}>Logout!</NavLink>
+						</NavItem>
+					</Nav>
+			</Navbar>
+
+
+					<div className = "Input">
 						<form onSubmit={this.post}>
-							<input type = "text" value = {this.state.data} onChange = {this.updateCounter}/>{this.state.data.length}/140<br></br>
-							<Button color = "primary" type='submit'>Post</Button>
+
+							<InputGroup>
+					        <InputGroupAddon addonType="prepend">Message:</InputGroupAddon>
+					        <Input value = {this.state.data} onChange = {this.updateCounter} />
+									<InputGroupAddon addonType="append"><Button color = "primary" type='submit'>Post</Button></InputGroupAddon>
+								</InputGroup>
+								{this.state.data.length}/140
+
 						</form>
 						</div>
-						<ul id = "feed">
+						<ListGroup id = "feed">
+						<ListGroupItem color="success"><h2>Posts</h2></ListGroupItem>
 						{this.state.posts.map((message) =>
-							<li key={message._id.toString()} style= {message.Flag === true ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
+							<ListGroupItem color="info" key={message._id.toString()} style= {message.Flag === true ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
 							"{message.Message}" Posted by {sessionStorage.getItem('LoginName') === message.UserPosted ? ('You') : (message.UserPosted)  }!
-							
-							</li>
+							</ListGroupItem>
 						)}
-						</ul>
-						<h2>Friendlist</h2>
-						<ul>
-						{
-							Object.keys(this.state.profile.FriendsList).length === 0 ?  (<li>You do not seem to have any friends!</li>) : (this.state.profile.FriendsList.map((friend) => <li key={friend}>{friend.DisplayName}</li>))
-						} 
-						</ul>
+						</ListGroup>
+
+						<ListGroup id="friendlist">
+							<ListGroupItem color="success"><h2>Friendlist</h2></ListGroupItem>
+							{
+								Object.keys(this.state.profile.FriendsList).length === 0 ?
+								(<ListGroupItem color="info">You do not seem to have any friends!</ListGroupItem>) :
+								(this.state.profile.FriendsList.map((friend) => <ListGroupItem color="info" key={friend}>{friend.DisplayName}</ListGroupItem>))
+							}
+						</ListGroup>
 				</div>
 			);
 		}
@@ -136,9 +157,9 @@ class Profile extends Component {
 						pathname: "/"
 					}}
 		/>)
-		}		
+		}
 	}
-}	
+}
 
 
 export default Profile;

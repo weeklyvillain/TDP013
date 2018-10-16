@@ -1,0 +1,28 @@
+.list-group-item {
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+}
+
+#feed {
+  float:left;
+  width: 45%;
+}
+#friendlist{
+    float: right;
+    width: 45%;
+}
+
+.input-group {
+  width: 43%;
+}
+.Input {
+    margin-top: 2%;
+    margin-left: 1.5%;
+}
+
+h4 {
+  margin-top: auto;
+  margin-bottom: auto;
+}
