@@ -66,6 +66,10 @@ class Profile extends Component {
 	}
 
 	flag(e) {
+		if(sessionStorage.getItem('LoginName') !== this.state.profile.LoginName){
+			return;
+		}
+		e.preventDefault();
 		console.log(e.target.id);
 		axios({
 				method:'get',
@@ -90,7 +94,8 @@ class Profile extends Component {
 					<ul id = "feed">
 					{this.state.posts.map((message) =>
 						<li key={message._id.toString()} style= {message.Flag === true ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
-						{message.Message}
+						"{message.Message}" Posted by {sessionStorage.getItem('LoginName') === message.UserPosted ? ('You') : (message.UserPosted)  }!
+						
 						</li>
 					)}
 					</ul>
