@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import { Button } from 'reactstrap';
+import {Redirect}  from "react-router-dom";
 const axios = require('axios');
 
 class Profile extends Component {
@@ -18,10 +19,17 @@ class Profile extends Component {
 		this.flag = this.flag.bind(this);
 		this.getProfile = this.getProfile.bind(this);
 		this.updateFeed = this.updateFeed.bind(this);
+		this.logout = this.logout.bind(this);
 	};
 
+	logout(e){
+		e.preventDefault();
+		sessionStorage.clear();
+		this.setState({LoginName: ""});
+	}
+
 	getProfile(){
-		axios.get("http://127.0.0.1:3001/getProfile",{params: {Username: 'Admin'}})
+		axios.get("http://127.0.0.1:3001/getProfile",{params: {Username: sessionStorage.getItem('LoginName')}})
 		.then(res => {
 			const profile = res.data[0];
 			this.setState({profile: profile, posts: profile.Posts.reverse()})
@@ -38,7 +46,6 @@ class Profile extends Component {
 	}
 
 	componentWillMount() {
-		sessionStorage.setItem('LoginName', 'Admin2');
 		this.getProfile();
 	}
 
@@ -82,34 +89,43 @@ class Profile extends Component {
 	}
 
 	render() {
-		return (
-			<div>
-				<h1>Welcome to {sessionStorage.getItem('LoginName') === this.state.profile.LoginName ? (" your home"):(" " + this.state.profile.DisplayName + "s ")}page!</h1>
-					<div className = "Input">
-					<form onSubmit={this.post}>
-						<input type = "text" value = {this.state.data} onChange = {this.updateCounter}/>{this.state.data.length}/140<br></br>
-						<Button color = "primary" type='submit'>Post</Button>
-					</form>
-					</div>
-					<ul id = "feed">
-					{this.state.posts.map((message) =>
-						<li key={message._id.toString()} style= {message.Flag === true ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
-						"{message.Message}" Posted by {sessionStorage.getItem('LoginName') === message.UserPosted ? ('You') : (message.UserPosted)  }!
-						
-						</li>
-					)}
-					</ul>
-					<h2>Friendlist</h2>
-					<ul>
-					{
-						Object.keys(this.state.profile.FriendsList).length === 0 ?  (<li>You do not seem to have any friends!</li>) : (this.state.profile.FriendsList.map((friend) => <li key={friend}>{friend.DisplayName}</li>))
-					} 
-					</ul>
-			</div>
-		);
+		if(sessionStorage.getItem("LoggedIn") === "true"){
+			return (
+				<div>
+					<button onClick={this.logout}>Logout!</button>
+					<h1>Welcome to {sessionStorage.getItem('LoginName') === this.state.profile.LoginName ? (" your home"):(" " + this.state.profile.DisplayName + "s ")}page!</h1>
+						<div className = "Input">
+						<form onSubmit={this.post}>
+							<input type = "text" value = {this.state.data} onChange = {this.updateCounter}/>{this.state.data.length}/140<br></br>
+							<Button color = "primary" type='submit'>Post</Button>
+						</form>
+						</div>
+						<ul id = "feed">
+						{this.state.posts.map((message) =>
+							<li key={message._id.toString()} style= {message.Flag === true ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
+							"{message.Message}" Posted by {sessionStorage.getItem('LoginName') === message.UserPosted ? ('You') : (message.UserPosted)  }!
+							
+							</li>
+						)}
+						</ul>
+						<h2>Friendlist</h2>
+						<ul>
+						{
+							Object.keys(this.state.profile.FriendsList).length === 0 ?  (<li>You do not seem to have any friends!</li>) : (this.state.profile.FriendsList.map((friend) => <li key={friend}>{friend.DisplayName}</li>))
+						} 
+						</ul>
+				</div>
+			);
+		}else{
+			return (
+				<Redirect
+					to={{
+						pathname: "/"
+					}}
+		/>)
+		}		
 	}
 }
-
 
 
 export default Profile;

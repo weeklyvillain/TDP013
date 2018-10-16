@@ -10,8 +10,9 @@ class Login extends Component {
     this.state = {
       Username: "",
       Password: "",
-      LoggedIn: 0
+      LoggedIn: false
     };
+
     this.updateUsername = this.updateUsername.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
     this.submitData = this.submitData.bind(this);
@@ -29,13 +30,14 @@ class Login extends Component {
       Username: this.state.Username,
       Password: this.state.Password
     }
-    }).then(function (response) {
-      if(response.data) {
-
-        this.props.history.push("/");
-        sessionStorage.setItem('LoginName', this.state.Username);
+    }).then(res => {
+			const result = res.data;
+      if(result === true){
+        sessionStorage.setItem("LoginName", this.state.Username);
+        sessionStorage.setItem("LoggedIn", result);
+        this.setState({LoggedIn: result});
       }
-    });
+		});
   }
 
 
@@ -56,8 +58,7 @@ class Login extends Component {
 
 
   render() {
-    console.log(this.state.LoggedIn);
-    if(this.state.LoggedIn) {
+    if(this.state.LoggedIn|| sessionStorage.getItem("LoggedIn") === "true") {
       return (
           <Redirect
           to={{
@@ -65,7 +66,7 @@ class Login extends Component {
             state:{viewedProfile: this.state.Username}
           }}
           />)
-        }else{
+      }else{
           return(
             <div className="Login">
               <form onSubmit={this.submitData}>
@@ -96,10 +97,8 @@ class Login extends Component {
                 </Button>
               </form>
             </div>
-
           )
-        }
-
+      }
   }
 }
 export default Login;
