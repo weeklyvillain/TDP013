@@ -11,17 +11,26 @@ class Login extends Component {
 	  Username: "",
 	  Password: "",
 	  wrongComb: false,
-	  LoggedIn: false
+	  LoggedIn: false,
+	  newDisplayName: "", 
+	  newUsername: "",
+	  newPassword: "",
+	  newConfirmedPass: ""
 	};
 
 	this.updateUsername = this.updateUsername.bind(this);
 	this.updatePassword = this.updatePassword.bind(this);
 	this.submitData = this.submitData.bind(this);
+	this.disableInvalidLogin = this.disableInvalidLogin.bind(this);
 
   }
 
-  checkFrom() {
+  disableInvalidLogin() {
 	return this.state.Username.length > 0 && this.state.Password.length > 0;
+  }
+
+  validateNewUser(){
+	  return true;
   }
 
   submitData(e) {
@@ -56,6 +65,21 @@ class Login extends Component {
 	
   }
 
+  addUser(e){
+	e.preventDefault();
+	axios.get('http://127.0.0.1:3001/register', {
+		params: {
+	  		Username: this.state.newUsername,
+	  		Password: this.state.newPassword,
+			DisplayName: this.newDisplayName
+		}
+	}).then(res => {
+		sessionStorage.setItem("LoginName", this.state.newUsername);
+		sessionStorage.setItem("LoggedIn", true);
+		this.setState({LoggedIn: true});
+	});
+}
+
 
   render() {
 	if(this.state.LoggedIn|| sessionStorage.getItem("LoggedIn") === "true") {
@@ -70,15 +94,17 @@ class Login extends Component {
 			<div className="Login">
 			  <form onSubmit={this.submitData}>
 				<FormGroup size="large">
-				  <Label>username</Label>
+				  <Label>Log in!</Label>
 				  <Input
 					autoFocus
+					placeholder="Username"
 					type="username"
 					value={this.state.Username}
 					onChange={this.updateUsername}
 				  />
-				  <Label>Password</Label>
+				  <br></br>
 				  <Input
+				  	placeholder="Password"
 					value={this.state.Password}
 					onChange={this.updatePassword}
 					type="password"
@@ -87,7 +113,7 @@ class Login extends Component {
 				<Button
 				  block
 				  size="large"
-				  disabled={!this.checkFrom()}
+				  disabled={!this.disableInvalidLogin()}
 				  type="submit"
 				>
 				  Login
@@ -95,31 +121,43 @@ class Login extends Component {
 				{this.state.wrongComb ? "Wrong Username/Password combination": ""}
 			  </form>
 			  <FormGroup size="large">
-				<label>Register</label>
+				<label>Or register please:</label>
 				<Input
-					placeholder="Display name"
+					placeholder="Your New Display Name"
 					type="username"
 					value={this.state.Username}
 					onChange={this.updateUsername}
 				  />
+				  <br></br>
 				  <Input
-					placeholder="Username"
+					placeholder="Your New Username"
 					type="username"
 					value={this.state.Username}
 					onChange={this.updateUsername}
 				  />
+				  <br></br>
 					<Input
-						placeholder="Password"
+						placeholder="Your New Password"
 					value={this.state.Password}
 					onChange={this.updatePassword}
 					type="password"
 				  />
+				  <br></br>
 					<Input
-						placeholder="Confirm Password"
+						placeholder="Please Confirm Your New Password"
 					value={this.state.Password}
 					onChange={this.updatePassword}
 					type="password"
 				  />
+				<br></br>
+				<Button
+				  block
+				  size="large"
+				  disabled={this.validateNewUser()}
+				  type="submit"
+				>
+				  Register
+				</Button>
 				</FormGroup>
 			</div>
 		  )
