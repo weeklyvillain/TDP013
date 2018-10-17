@@ -120,6 +120,7 @@ class Login extends Component {
 				</Button>
 				{this.state.wrongComb ? "Wrong Username/Password combination": ""}
 			  </form>
+			{/*				  
 			  <FormGroup size="large">
 				<label>Or register please:</label>
 				<Input
@@ -128,6 +129,7 @@ class Login extends Component {
 					value={this.state.Username}
 					onChange={this.updateUsername}
 				  />
+				  
 				  <br></br>
 				  <Input
 					placeholder="Your New Username"
@@ -159,9 +161,10 @@ class Login extends Component {
 				  Register
 				</Button>
 				</FormGroup>
+				*/}
 			</div>
 		  )
-	  }
+		  }
   }
 }
 export default Login;
