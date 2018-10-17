@@ -103,13 +103,13 @@ var cors = require('cors');
                 res.status(200).send(false);
               }
           });
-      });
+        });
     });
 
     app.get('/register', function(req, res){
       MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
-            var userObj = { LoginName : req.query.Username, Password : req.query.Password, DisplayName :req.query.DisplayName, FriendsList : {}, DoB : req.query.DoB }
+            var userObj = { LoginName : req.query.Username, Password : req.query.Password, DisplayName :req.query.DisplayName, FriendsList : {} }
             dbo.collection("Profiles").insertOne(user_obj, function(err, result) {
                 db.close();
             });
