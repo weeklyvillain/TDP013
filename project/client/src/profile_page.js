@@ -133,17 +133,26 @@ class Profile extends Component {
 							</ListGroupItem>
 						)}
 						</ListGroup>
+							{this.printFriendsList()}
 
-						<ListGroup id="friendlist">
-							<ListGroupItem color="success"><h2>Friendlist</h2></ListGroupItem>
-							{
-								Object.keys(this.state.profile.FriendsList).length === 0 ?
-								(<ListGroupItem color="info">You do not seem to have any friends!</ListGroupItem>) :
-								(this.state.profile.FriendsList.map((friend) => <ListGroupItem color="info" key={friend}>{friend.DisplayName}</ListGroupItem>))
-							}
-						</ListGroup>
 				</div>
 			);
+		}
+	}
+	
+	printFriendsList(){
+		if (sessionStorage.getItem('LoginName') === this.state.profile.LoginName){
+			return(<ListGroup id="friendlist">
+			<ListGroupItem color="success"><h2>Friendlist</h2></ListGroupItem>
+			{
+				Object.keys(this.state.profile.FriendsList).length === 0 ?
+				(<ListGroupItem color="info">You do not seem to have any friends!</ListGroupItem>) :
+				(this.state.profile.FriendsList.map((friend) => <ListGroupItem color="info" key={friend}>{friend.DisplayName}</ListGroupItem>))
+			}
+		</ListGroup>
+			);
+		}else{
+			return;
 		}
 	}
 

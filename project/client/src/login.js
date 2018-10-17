@@ -10,6 +10,7 @@ class Login extends Component {
     this.state = {
       Username: "",
       Password: "",
+      wrongComb: false,
       LoggedIn: false
     };
 
@@ -36,6 +37,8 @@ class Login extends Component {
         sessionStorage.setItem("LoginName", this.state.Username);
         sessionStorage.setItem("LoggedIn", result);
         this.setState({LoggedIn: result});
+      }else{
+        this.setState({wrongComb: true})
       }
 		});
   }
@@ -44,16 +47,13 @@ class Login extends Component {
 
   updateUsername(e) {
     e.preventDefault();
-    if(e.target.value.length <= 140) {
-     this.setState({Username: e.target.value});
-    }
+    this.setState({Username: e.target.value});
   }
 
   updatePassword(e) {
     e.preventDefault();
-    if(e.target.value.length <= 140) {
-     this.setState({Password: e.target.value});
-    }
+    this.setState({Password: e.target.value});
+    
   }
 
 
@@ -73,12 +73,10 @@ class Login extends Component {
                   <Label>username</Label>
                   <Input
                     autoFocus
-                    type="Username"
+                    type="username"
                     value={this.state.Username}
                     onChange={this.updateUsername}
                   />
-                </FormGroup>
-                <FormGroup size="large">
                   <Label>Password</Label>
                   <Input
                     value={this.state.Password}
@@ -94,6 +92,7 @@ class Login extends Component {
                 >
                   Login
                 </Button>
+                {this.state.wrongComb ? "Wrong Username/Password combination": ""}
               </form>
             </div>
           )
