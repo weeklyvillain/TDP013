@@ -1,0 +1,16 @@
+#searchForm {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2%;
+}
+
+#searchFeed {
+  width: 53%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.addFriendButton {
+  float: right;
+}

@@ -1,25 +1,39 @@
-.list-group-item {
-  margin-left: 2.5%;
-  margin-right: 2.5%;
-  margin-top: 1%;
-  margin-bottom: 1%;
+form {
+  width: 44%;
 }
 
 #feed {
   float:left;
   width: 45%;
 }
+
+#feedScroll {
+  overflow: auto;
+  height: 592px;
+}
 #friendlist{
     float: right;
     width: 45%;
 }
+.list-group-item {
+  margin-left: 2.5%;
+  margin-right: 2.5%;
+  margin-top: 1%;
+  margin-bottom: 1%;
+  word-break: break-all;
+}
 
 .input-group {
-  width: 43%;
+  width: 100%;
 }
 .Input {
     margin-top: 2%;
     margin-left: 1.5%;
+}
+
+
+body {
+  background-color: #e7e7e7;
 }
 
 h4 {

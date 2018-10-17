@@ -141,7 +141,7 @@ var cors = require('cors');
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
             var my_query = {LoginName: req.query.LoginName};
-            dbo.collection("Profiles").update(my_query, {$push:{FriendsList: req.query.Friend}}, function(err, result) {
+            dbo.collection("Profiles").update(my_query, {$push:{FriendsList: [req.query.FriendLoginName, req.query.FriendDisplayName ]}}, function(err, result) {
                 db.close();
             });
             res.redirect("/");

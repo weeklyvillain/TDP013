@@ -81,7 +81,6 @@ class Profile extends Component {
 			return;
 		}
 		e.preventDefault();
-		console.log(e.target.id);
 		axios({
 				method:'get',
 				url:'http://127.0.0.1:3001/flag',
@@ -104,7 +103,7 @@ class Profile extends Component {
 				<h4>Welcome to {sessionStorage.getItem('LoginName') === this.state.profile.LoginName ? (" your home"):(" " + this.state.profile.DisplayName + "s ")}page!</h4>
 					<Nav className="ml-auto" navbar>
 						<NavItem>
-							<NavLink>Search</NavLink>
+							<NavLink href="/search">Search</NavLink>
 						</NavItem>
 						<NavItem>
 							<NavLink href="/" onClick={this.logout}>Logout!</NavLink>
@@ -127,11 +126,13 @@ class Profile extends Component {
 						</div>
 						<ListGroup id = "feed">
 						<ListGroupItem color="success"><h2>Posts</h2></ListGroupItem>
+						<div id="feedScroll">
 						{this.state.posts.map((message) =>
 							<ListGroupItem color="info" key={message._id.toString()} style= {message.Flag === true ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
 							"{message.Message}" Posted by {sessionStorage.getItem('LoginName') === message.UserPosted ? ('You') : (message.UserPosted)  }!
 							</ListGroupItem>
 						)}
+						</div>
 						</ListGroup>
 							{this.printFriendsList()}
 
@@ -139,7 +140,7 @@ class Profile extends Component {
 			);
 		}
 	}
-	
+
 	printFriendsList(){
 		if (sessionStorage.getItem('LoginName') === this.state.profile.LoginName){
 			return(<ListGroup id="friendlist">
@@ -147,7 +148,7 @@ class Profile extends Component {
 			{
 				Object.keys(this.state.profile.FriendsList).length === 0 ?
 				(<ListGroupItem color="info">You do not seem to have any friends!</ListGroupItem>) :
-				(this.state.profile.FriendsList.map((friend) => <ListGroupItem color="info" key={friend}>{friend.DisplayName}</ListGroupItem>))
+				(this.state.profile.FriendsList.map((friend) => <ListGroupItem color="info" key={friend}><a href={friend[0]}>{friend[1]}</a></ListGroupItem>))
 			}
 		</ListGroup>
 			);
