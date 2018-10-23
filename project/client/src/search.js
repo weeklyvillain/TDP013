@@ -45,6 +45,7 @@ class Search extends Component {
     axios.get('http://127.0.0.1:3001/addFriend', {
     params: {
       LoginName: sessionStorage.getItem('LoginName'),
+      DispalyName: sessionStorage.getItem('DisplayName'),
       FriendDisplayName: this.state.Username,
       FriendLoginName: e.target.value
     }

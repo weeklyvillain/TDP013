@@ -52,8 +52,6 @@ class Login extends Component {
 	});
   }
 
-
-
   updateUsername(e) {
 	e.preventDefault();
 	this.setState({Username: e.target.value});

@@ -69,7 +69,8 @@ class Profile extends Component {
 				params: {
 					message: this.state.data,
 					UserPage: this.state.profile.LoginName,
-					UserPosted: sessionStorage.getItem('LoginName')
+					UserPosted: sessionStorage.getItem('LoginName'),
+					Flag: (sessionStorage.getItem('LoginName') === this.state.profile.LoginName)? 1 : 0
 				}
 		});
 		this.updateFeed();
@@ -128,7 +129,7 @@ class Profile extends Component {
 						<ListGroupItem color="success"><h2>Posts</h2></ListGroupItem>
 						<div id="feedScroll">
 						{this.state.posts.map((message) =>
-							<ListGroupItem color="info" key={message._id.toString()} style= {message.Flag === true ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
+							<ListGroupItem color="info" key={message._id.toString()} style= {message.Flag === 1 ? {color: 'blue'} : {color: 'red'}} id={message._id.toString()} onClick={this.flag}>
 							"{message.Message}" Posted by {sessionStorage.getItem('LoginName') === message.UserPosted ? ('You') : (message.UserPosted)  }!
 							</ListGroupItem>
 						)}
@@ -166,7 +167,7 @@ class Profile extends Component {
 					to={{
 						pathname: "/"
 					}}
-		/>)
+				/>)
 		}
 	}
 }

@@ -47,7 +47,7 @@ var cors = require('cors');
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
             var my_query = {_id: ObjectId(req.query.id)};
-            var new_values = {$set:{Flag: true}};
+            var new_values = {$set:{Flag: 1}};
             dbo.collection("Posts").updateOne(my_query, new_values, function(err, result) {
                 if(result.result.nModified == 0 ){
                     res.status(400).send("Status: 400 Wrong Parameters");
@@ -71,7 +71,7 @@ var cors = require('cors');
       }
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
-            var message_obj = { Message: req.query.message, Flag: false, UserPage: req.query.UserPage, UserPosted: req.query.UserPosted};
+            var message_obj = { Message: req.query.message, UserPage: req.query.UserPage, UserPosted: req.query.UserPosted, Flag: parseInt(req.query.Flag)};
             dbo.collection("Posts").insertOne(message_obj, function(err, result) {
                 db.close();
               });
@@ -138,13 +138,26 @@ var cors = require('cors');
     //app.get('/removePost', function(req, res){});
 
     app.get('/addFriend', function(req, res){
+
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+            var counter = 0;
             var dbo = db.db("tdp013");
-            var my_query = {LoginName: req.query.LoginName};
-            dbo.collection("Profiles").update(my_query, {$push:{FriendsList: [req.query.FriendLoginName, req.query.FriendDisplayName ]}}, function(err, result) {
+            dbo.collection("Profiles").updateOne({LoginName: req.query.LoginName}, {$addToSet :  { FriendsList: [req.query.FriendLoginName, req.query.FriendDisplayName ]}}, function(err, result) {
                 db.close();
+                if(result.result.nModified == 0){
+                    counter++;
+                }
             });
-            res.redirect("/");
+            dbo.collection("Profiles").updateOne({LoginName: req.query.FriendLoginName}, {$addToSet :  { FriendsList: [req.query.LoginName, req.query.DisplayName ]}}, function(err, result) {
+                db.close();
+                if(result.result.nModified == 0){
+                    counter++;
+                }
+            });
+            if(counter > 0 ){
+                res.status(400).send("Something went wrong!");
+                return;
+            }
         });
     });
 
