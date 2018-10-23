@@ -30,6 +30,7 @@ class Profile extends Component {
 	}
 
 	getProfile(){
+
 		axios.get("http://127.0.0.1:3001/getProfile",{params: {Username: this.props.match.url.substring(1)}})
 		.then(res => {
 			if(res.data.length === 0){
@@ -48,9 +49,9 @@ class Profile extends Component {
 			this.setState({posts:responses.reverse()});
 		});
 	}
-
-	componentWillMount() {
-		this.getProfile();
+	componentDidMount() {
+		console.log("I got here");
+			this.getProfile();
 	}
 
 
@@ -159,16 +160,7 @@ class Profile extends Component {
 	}
 
 	render() {
-		if(sessionStorage.getItem("LoggedIn") === "true"){
 			return this.checkExists();
-		}else{
-			return (
-				<Redirect
-					to={{
-						pathname: "/"
-					}}
-				/>)
-		}
 	}
 }
 

@@ -11,8 +11,8 @@ class Login extends Component {
 	  Username: "",
 	  Password: "",
 	  wrongComb: false,
-	  LoggedIn: false,
-	  newDisplayName: "", 
+	  loggedIn: false,
+	  newDisplayName: "",
 	  newUsername: "",
 	  newPassword: "",
 	  newConfirmedPass: ""
@@ -37,18 +37,21 @@ class Login extends Component {
 	e.preventDefault();
 	axios.get('http://127.0.0.1:3001/login', {
 	params: {
-	  Username: this.state.Username,
-	  Password: this.state.Password
+	  username: this.state.Username,
+	  password: this.state.Password
 	}
 	}).then(res => {
-	  const result = res.data;
-	  if(result === true){
-		sessionStorage.setItem("LoginName", this.state.Username);
-		sessionStorage.setItem("LoggedIn", result);
-		this.setState({LoggedIn: result});
-	  }else{
-		this.setState({wrongComb: true})
-	  }
+    console.log(res);
+    if(res.data){
+      const result = res.data;
+      sessionStorage.setItem("LoginName", result);
+      this.setState({loggedIn: true})
+    }else{
+      console.log("Failure")
+      this.setState({wrongComb: true});
+    }
+
+
 	});
   }
 
@@ -60,7 +63,7 @@ class Login extends Component {
   updatePassword(e) {
 	e.preventDefault();
 	this.setState({Password: e.target.value});
-	
+
   }
 
   addUser(e){
@@ -74,13 +77,13 @@ class Login extends Component {
 	}).then(res => {
 		sessionStorage.setItem("LoginName", this.state.newUsername);
 		sessionStorage.setItem("LoggedIn", true);
-		this.setState({LoggedIn: true});
+		this.setState({loggedIn: true});
 	});
 }
 
 
   render() {
-	if(this.state.LoggedIn|| sessionStorage.getItem("LoggedIn") === "true") {
+	if(this.state.loggedIn) {
 	  return (
 		  <Redirect
 		  to={{
@@ -118,7 +121,7 @@ class Login extends Component {
 				</Button>
 				{this.state.wrongComb ? "Wrong Username/Password combination": ""}
 			  </form>
-			{/*				  
+			{/*
 			  <FormGroup size="large">
 				<label>Or register please:</label>
 				<Input
@@ -127,7 +130,7 @@ class Login extends Component {
 					value={this.state.Username}
 					onChange={this.updateUsername}
 				  />
-				  
+
 				  <br></br>
 				  <Input
 					placeholder="Your New Username"

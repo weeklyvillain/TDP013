@@ -1,27 +1,87 @@
 var express = require('express');
+var session = require('express-session'),
+    bodyParser = require("body-parser")
+    cookieParser = require("cookie-parser");
+var passport = require('passport'),
+    LocalStrategy = require('passport-local').Strategy;
+var bcrypt = require('bcrypt');
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectId;
 var cors = require('cors');
+
+
+const saltRounds = 10;
+
+
 
 
     var app = express();
 
     app.use(cors());
 
+    app.use(session({ secret: "catsIsGood", resave: false, saveUninitialized: false, cookie: { secure: true } }));
+    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(cookieParser());
+    app.use(passport.initialize());
+    app.use(passport.session());
+
+    passport.use(new LocalStrategy(
+      function(username, password, done) {
+        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+          var dbo = db.db("tdp013");
+          dbo.collection("Users").findOne({LoginName: username}, function (err, user) {
+            db.close();
+            if (!user) {
+              return done(null, false, { message: 'Incorrect Username or Password.' });
+            }
+            bcrypt.compare(password, user.Password, function(err, result){
+                if(result){
+                  return done(null, user);
+                }else{
+                  return done(null, false, {message: 'Incorrect Username or Password.'});
+                }
+            });
+        });
+      });
+    }
+  ));
+
+  passport.serializeUser(function(user, done) {
+    console.log("Serializing user");
+    done(null, user._id);
+  });
+
+  passport.deserializeUser(function(Username, done) {
+    console.log("Deserializing user");
+    MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+      var dbo = db.db("tdp013");
+      dbo.collection("Profile").findOne({LoginName: Username}, function (err, user) {
+        db.close();
+        done(err, user);
+      });
+    });
+  });
+
+  app.get('/login', function(req, res, next) {
+      passport.authenticate('local', function(err, user, info) {
+          if (err) { return next(err); }
+          if (!user) { return res.redirect('/login'); }
+
+          req.login(user, (err) => {
+            if(err) throw err;
+            console.log("Login Successfull!");
+            return res.send(user.LoginName);
+          });
+      })(req, res, next) ;
+  });
+
+
     app.get("/index.html", function (req, res){
         res.redirect("/");
     });
 
     app.get('/', function (req, res, next) {
-        res.status(200).send(`<!doctype html>
-        <html>
-        <body>
-            <form action='/save' method='get'>
-                <input type='text' name='message' /><br />
-                <input type="submit" value="Send Request">
-            </form>
-        </body>
-        </html>`);
+        res.status(200).send();
     });
 
 
@@ -91,28 +151,21 @@ var cors = require('cors');
         return save(req, res);
     });
 
-    app.get('/login', function(req, res){
-      MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-          var dbo = db.db("tdp013");
-          var my_query = {LoginName: req.query.Username, Password: req.query.Password};
-          dbo.collection("Profiles").find(my_query).toArray(function(err, result) {
-              db.close();
-              if(result.length > 0){
-                res.status(200).send(true);
-              } else {
-                res.status(200).send(false);
-              }
-          });
-        });
-    });
+
+
 
     app.get('/register', function(req, res){
       MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+          bcrypt.hash(req.query.password, saltRounds, function(err, hashed_pass){
             var dbo = db.db("tdp013");
-            var userObj = { LoginName : req.query.Username, Password : req.query.Password, DisplayName :req.query.DisplayName, FriendsList : {} }
-            dbo.collection("Profiles").insertOne(user_obj, function(err, result) {
+
+            var userObj = { LoginName : req.query.username, Password : hashed_pass }
+            dbo.collection("Users").insertOne(userObj, function(err, result) {
                 db.close();
             });
+          });
+
+
         });
           res.redirect("/");
     });

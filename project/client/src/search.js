@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Button, ListGroup, ListGroupItem, InputGroup, InputGroupAddon, Input, Navbar, NavbarBrand, NavItem, NavLink, Nav} from 'reactstrap';
+import { Button, ListGroup, ListGroupItem, InputGroup, InputGroupAddon, Input} from 'reactstrap';
 import {Redirect}  from "react-router-dom";
 import './search.css'
+import Nav_bar from "./NavBar";
 const axios = require('axios');
 
 class Search extends Component {
@@ -59,18 +60,8 @@ class Search extends Component {
     if(sessionStorage.getItem("LoggedIn") === "true"){
       return (
 
-        <div>
-        <Navbar color="light" expand="md">
-        <NavbarBrand href="/">witter</NavbarBrand>
-          <Nav className="ml-auto" navbar>
-            <NavItem>
-              <NavLink href="/">Back</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="/" onClick={this.logout}>Logout!</NavLink>
-            </NavItem>
-          </Nav>
-      </Navbar>
+      <div>
+        <Nav_bar />
 
         <form id="searchForm" onSubmit={this.sendData}>
           <InputGroup>
