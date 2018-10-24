@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, ListGroup, ListGroupItem, InputGroup, InputGroupAddon, Input, Navbar, NavbarBrand, NavItem, NavLink, Nav} from 'reactstrap';
 import {Redirect}  from "react-router-dom";
 import './profile_page.css';
+import Nav_bar from './NavBar';
 const axios = require('axios');
 
 class Profile extends Component {
@@ -12,8 +13,9 @@ class Profile extends Component {
 				data: '',
 				profile:{LoginName: "", DisplayName: "", FriendsList:{}},
 				posts: [],
-				notExist: false
-		}
+				notExist: false,
+				loggedIn: true
+			}
 
 		this.updateCounter = this.updateCounter.bind(this);
 		this.post = this.post.bind(this);
@@ -30,14 +32,20 @@ class Profile extends Component {
 	}
 
 	getProfile(){
-		axios.get("http://127.0.0.1:3001/getProfile", {params: {Username: this.props.match.url.substring(1)}, withCredentials: true})
+		axios.get("http://127.0.0.1:3001/getProfile", {params: {profilePage: this.props.match.url.substring(1)}, withCredentials: true})
 		.then(res => {
 			if(res.data.length === 0){
 				this.setState({notExist: true});
 			}else{
 				const profile = res.data[0];
 				this.setState({profile: profile, posts: profile.Posts.reverse()})
+				return;
 			}
+
+			
+		}).catch(err => {
+			console.log("hej");
+			this.setState({loggedIn: false})
 		});
 	}
 
@@ -48,9 +56,8 @@ class Profile extends Component {
 			this.setState({posts:responses.reverse()});
 		});
 	}
-	componentDidMount() {
-		console.log("I got here");
-			this.getProfile();
+	componentWillMount() {
+		this.getProfile();
 	}
 
 
@@ -99,18 +106,9 @@ class Profile extends Component {
 		}else{
 			return (
 				<div>
-				<Navbar color="light" expand="md">
-				<NavbarBrand href="/">witter</NavbarBrand>
-				<h4>Welcome to {sessionStorage.getItem('LoginName') === this.state.profile.LoginName ? (" your home"):(" " + this.state.profile.DisplayName + "s ")}page!</h4>
-					<Nav className="ml-auto" navbar>
-						<NavItem>
-							<NavLink href="/search">Search</NavLink>
-						</NavItem>
-						<NavItem>
-							<NavLink href="/" onClick={this.logout}>Logout!</NavLink>
-						</NavItem>
-					</Nav>
-			</Navbar>
+			<Nav_bar />
+			
+			<h4>Welcome to {sessionStorage.getItem('LoginName') === this.state.profile.LoginName ? (" your home"):(" " + this.state.profile.DisplayName + "s ")}page!</h4>
 
 
 					<div className = "Input">
@@ -159,7 +157,17 @@ class Profile extends Component {
 	}
 
 	render() {
+		if(!this.state.loggedIn){
+			return (
+				<Redirect
+				to={{
+				  pathname: '/',
+				}}
+				/>)
+		}else{
 			return this.checkExists();
+		}
+
 	}
 }
 

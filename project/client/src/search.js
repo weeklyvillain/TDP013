@@ -10,7 +10,7 @@ class Search extends Component {
     super(props);
 
     this.state = {
-      Username: "",
+      username: "",
       profiles: []
     };
     this.updateState = this.updateState.bind(this);
@@ -22,19 +22,20 @@ class Search extends Component {
   logout(e){
     e.preventDefault();
     sessionStorage.clear();
-    this.setState({Username: ""});
+    this.setState({username: ""});
   }
 
   updateState(e) {
     e.preventDefault();
-    this.setState({Username: e.target.value});
+    this.setState({username: e.target.value});
     };
 
   sendData(e) {
       e.preventDefault();
+      console.log(this.state.username);
       axios.get('http://127.0.0.1:3001/search', {
       params: {
-        Username: this.state.Username
+        searchedName: this.state.username
       }
     }).then(res => {
 			this.setState({profiles: res.data});
@@ -45,27 +46,23 @@ class Search extends Component {
     e.preventDefault();
     axios.get('http://127.0.0.1:3001/addFriend', {
     params: {
-      LoginName: sessionStorage.getItem('LoginName'),
-      DispalyName: sessionStorage.getItem('DisplayName'),
-      FriendDisplayName: this.state.Username,
+      FriendDisplayName: this.state.username,
       FriendLoginName: e.target.value
     }
   }).then(res => {
-
+    
   });
   }
 
 
   render() {
-    if(sessionStorage.getItem("LoggedIn") === "true"){
       return (
-
       <div>
         <Nav_bar />
 
         <form id="searchForm" onSubmit={this.sendData}>
           <InputGroup>
-              <Input value = {this.state.Username} onChange = {this.updateState} />
+              <Input value = {this.state.username} onChange = {this.updateState} />
               <InputGroupAddon addonType="append"><Button color = "primary" type='submit'>Search</Button></InputGroupAddon>
             </InputGroup>
           </form>
@@ -74,7 +71,7 @@ class Search extends Component {
         <ListGroup>
             {this.state.profiles.map((profile) =>
               <ListGroupItem color="info"  key={profile._id.toString()} id={profile._id.toString()}>
-              {profile.DisplayName} <br />Username: {profile.LoginName}
+              {profile.DisplayName} <br />username: {profile.LoginName}
               <Button className="addFriendButton" outline color="primary" value={profile.LoginName} onClick={this.addFriend}>Add Friend</Button>{' '}
               </ListGroupItem>
             )}
@@ -82,15 +79,8 @@ class Search extends Component {
       </div>
     </div>
       );
-		}else{
-			return (
-				<Redirect
-					to={{
-						pathname: "/"
-					}}
-		/>)
 		}
 
   }
-}
+
 export default Search;

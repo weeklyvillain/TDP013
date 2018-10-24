@@ -32,19 +32,19 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function(user, done) {
-  console.log("Serializing user");
-  done(null, user._id);
-
+    console.log("Serializing user");
+    done(null, user.LoginName);
 });
+
 passport.deserializeUser(function(Username, done) {
 console.log("Deserializing user");
-MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-  var dbo = db.db("tdp013");
-  dbo.collection("Profile").findOne({LoginName: Username}, function (err, user) {
-    db.close();
-    done(err, user);
-  });
-});
+    MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+        var dbo = db.db("tdp013");
+        dbo.collection("Profiles").findOne({LoginName: Username}, function (err, user) {
+            db.close();
+            done(err, user);
+        });
+    });
 });
 
     var app = express();
@@ -53,15 +53,12 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
     app.use(passport.session());
 
     var corsOptions = {
-      origin: /localhost/,
-      credentials: true
+        origin: [/localhost/, /127.0.0.1/ ],
+        credentials: true
     }
 
 
     app.use(cors(corsOptions));
-
-
-
 
   app.get('/login', function(req, res, next) {
       passport.authenticate('local', function(err, user, info) {
@@ -86,8 +83,7 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
         res.status(200).send();
     });
 
-
-    function get_all(req, res, next){
+    app.get('/getall', function(req, res){
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
             dbo.collection("Posts").find({UserPage: req.query.UserPage}).toArray(function(err, result) {
@@ -95,65 +91,51 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
                 res.status(200).send(result);
             });
         });
-    };
-
-    function flag(req, res, next){
-      if (!req.query.id){
-          res.status(400).send("Status: 400 Missing Parameters");
-          return;
-      }
-      if(req.query.id.length != 12 && req.query.id.length != 24 ){
-          res.status(400).send("Status: 400 Wrong Parameters");
-          return;
-      }
-        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-            var dbo = db.db("tdp013");
-            var my_query = {_id: ObjectId(req.query.id)};
-            var new_values = {$set:{Flag: 1}};
-            dbo.collection("Posts").updateOne(my_query, new_values, function(err, result) {
-                if(result.result.nModified == 0 ){
-                    res.status(400).send("Status: 400 Wrong Parameters");
-                    db.close()
-                    return;
-                }
-                res.status(200).send("");
-                db.close();
-            });
-        });
-    }
-
-    function save(req, res, next){
-      if (!req.query.message){
-          res.status(400).send("Status: 400 Missing Parameters");
-          return;
-      }
-      if(req.query.message.length <= 0 || req.query.message.length > 140 ){
-          res.status(400).send("Status: 400 Wrong Parameters");
-          return;
-      }
-        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-            var dbo = db.db("tdp013");
-            var message_obj = { Message: req.query.message, UserPage: req.query.UserPage, UserPosted: req.query.UserPosted, Flag: parseInt(req.query.Flag)};
-            dbo.collection("Posts").insertOne(message_obj, function(err, result) {
-                db.close();
-              });
-            });
-            res.redirect("/");
-    }
-
-    app.get('/getall', function(req, res){
-        return get_all(req, res);
     });
 
     app.get('/flag', function(req, res){
-        return flag(req, res);
+        if (!req.query.id){
+            res.status(400).send("Status: 400 Missing Parameters");
+            return;
+        }
+        if(req.query.id.length != 12 && req.query.id.length != 24 ){
+            res.status(400).send("Status: 400 Wrong Parameters");
+            return;
+        }
+          MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+              var dbo = db.db("tdp013");
+              var my_query = {_id: ObjectId(req.query.id)};
+              var new_values = {$set:{Flag: 1}};
+              dbo.collection("Posts").updateOne(my_query, new_values, function(err, result) {
+                  if(result.result.nModified == 0 ){
+                      res.status(400).send("Status: 400 Wrong Parameters");
+                      db.close()
+                      return;
+                  }
+                  res.status(200).send("");
+                  db.close();
+              });
+          });
     });
 
     app.get('/save', function(req, res){
-        return save(req, res);
+        if (!req.query.message){
+            res.status(400).send("Status: 400 Missing Parameters");
+            return;
+        }
+        if(req.query.message.length <= 0 || req.query.message.length > 140 ){
+            res.status(400).send("Status: 400 Wrong Parameters");
+            return;
+        }
+          MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+              var dbo = db.db("tdp013");
+              var message_obj = { Message: req.query.message, UserPage: req.query.UserPage, UserPosted: req.query.UserPosted, Flag: parseInt(req.query.Flag)};
+              dbo.collection("Posts").insertOne(message_obj, function(err, result) {
+                  db.close();
+                });
+              });
+              res.redirect("/");
     });
-
-
 
 
     app.get('/register', function(req, res){
@@ -171,38 +153,44 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
     });
 
     app.get('/getProfile', function(req, res){
-      console.log(req);
-        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-            var dbo = db.db("tdp013");
-            dbo.collection('Profiles').aggregate([
-                {'$match':{'LoginName': req.query.Username}},
-                {'$lookup':{
-                    from: 'Posts',
-                    localField: 'LoginName',
-                    foreignField: 'UserPage',
-                    as: 'Posts'
-                }}
-            ]).toArray(function(err, result){
-                db.close();
-                res.send(result);
+        if(req.isAuthenticated()){
+            
+            MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+                var dbo = db.db("tdp013");
+                dbo.collection('Profiles').aggregate([
+                    {'$match':{'LoginName': req.query.profilePage}},
+                    {'$lookup':{
+                        from: 'Posts',
+                        localField: 'LoginName',
+                        foreignField: 'UserPage',
+                        as: 'Posts'
+                    }}
+                ]).toArray(function(err, result){
+                    db.close();
+                    res.send(result);
+                });
             });
-        });
+        }else{
+            console.log("Not logged in")
+            res.status(400).send("Not logged in!");
+        }
+
     });
 
     //app.get('/removePost', function(req, res){});
 
     app.get('/addFriend', function(req, res){
-
+        console.log(req.isAuthenticated())
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var counter = 0;
             var dbo = db.db("tdp013");
-            dbo.collection("Profiles").updateOne({LoginName: req.query.LoginName}, {$addToSet :  { FriendsList: [req.query.FriendLoginName, req.query.FriendDisplayName ]}}, function(err, result) {
+            dbo.collection("Profiles").updateOne({LoginName: req.user.LoginName}, {$addToSet :  { FriendsList: [req.query.FriendLoginName, req.query.FriendDisplayName ]}}, function(err, result) {
                 db.close();
                 if(result.result.nModified == 0){
                     counter++;
                 }
             });
-            dbo.collection("Profiles").updateOne({LoginName: req.query.FriendLoginName}, {$addToSet :  { FriendsList: [req.query.LoginName, req.query.DisplayName ]}}, function(err, result) {
+            dbo.collection("Profiles").updateOne({LoginName: req.query.FriendLoginName}, {$addToSet :  { FriendsList: [req.user.LoginName, req.user.DisplayName ]}}, function(err, result) {
                 db.close();
                 if(result.result.nModified == 0){
                     counter++;
@@ -222,7 +210,7 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
     app.get('/search', function(req, res){
       MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
           var dbo = db.db("tdp013");
-          dbo.collection("Profiles").find({DisplayName: req.query.Username}).toArray(function(err, result) {
+          dbo.collection("Profiles").find({DisplayName: req.query.searchedName}).toArray(function(err, result) {
               db.close();
               res.send(result);
           });
