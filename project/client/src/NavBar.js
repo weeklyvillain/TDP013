@@ -33,8 +33,9 @@ class NavBar extends Component {
       console.log(this.state.username);
       axios.get('http://127.0.0.1:3001/search', {
       params: {
-        username: this.state.username
-      }
+        searchedName: this.state.username
+      },
+       withCredentials: true
     }).then(res => {
 			this.setState({profiles: res.data});
 		});
@@ -46,7 +47,8 @@ class NavBar extends Component {
     params: {
       FriendDisplayName: this.state.username,
       FriendLoginName: e.target.value
-    }
+    },
+     withCredentials: true
   }).then(res => {
 
   });
@@ -73,6 +75,7 @@ class NavBar extends Component {
             </NavItem>
           </Nav>
           <div id="searchFeed">
+          
         <ListGroup>
             {this.state.profiles.map((profile) =>
               <ListGroupItem color="info"  key={profile._id.toString()} id={profile._id.toString()}>
