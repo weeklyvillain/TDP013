@@ -1,7 +1,5 @@
 var express = require('express');
-var session = require('express-session'),
-    bodyParser = require("body-parser")
-    cookieParser = require("cookie-parser");
+var session = require('express-session');
 var passport = require('passport'),
     LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt');
@@ -12,55 +10,58 @@ var cors = require('cors');
 
 const saltRounds = 10;
 
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+      var dbo = db.db("tdp013");
+      dbo.collection("Users").findOne({LoginName: username}, function (err, user) {
+        db.close();
+        if (!user) {
+          return done(null, false, { message: 'Incorrect Username or Password.' });
+        }
+        bcrypt.compare(password, user.Password, function(err, result){
+            if(result){
+              return done(null, user);
+            }else{
+              return done(null, false, {message: 'Incorrect Username or Password.'});
+            }
+        });
+    });
+  });
+}
+));
 
+passport.serializeUser(function(user, done) {
+  console.log("Serializing user");
+  done(null, user._id);
 
+});
+passport.deserializeUser(function(Username, done) {
+console.log("Deserializing user");
+MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+  var dbo = db.db("tdp013");
+  dbo.collection("Profile").findOne({LoginName: Username}, function (err, user) {
+    db.close();
+    done(err, user);
+  });
+});
+});
 
     var app = express();
-
-    app.use(cors());
-
-    app.use(session({ secret: "catsIsGood", resave: false, saveUninitialized: false, cookie: { secure: true } }));
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(cookieParser());
+    app.use(session({ secret: "catsIsGood", resave: true, saveUninitialized: true, cookie: { secure: false } }));
     app.use(passport.initialize());
     app.use(passport.session());
 
-    passport.use(new LocalStrategy(
-      function(username, password, done) {
-        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-          var dbo = db.db("tdp013");
-          dbo.collection("Users").findOne({LoginName: username}, function (err, user) {
-            db.close();
-            if (!user) {
-              return done(null, false, { message: 'Incorrect Username or Password.' });
-            }
-            bcrypt.compare(password, user.Password, function(err, result){
-                if(result){
-                  return done(null, user);
-                }else{
-                  return done(null, false, {message: 'Incorrect Username or Password.'});
-                }
-            });
-        });
-      });
+    var corsOptions = {
+      origin: /localhost/,
+      credentials: true
     }
-  ));
 
-  passport.serializeUser(function(user, done) {
-    console.log("Serializing user");
-    done(null, user._id);
-  });
 
-  passport.deserializeUser(function(Username, done) {
-    console.log("Deserializing user");
-    MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-      var dbo = db.db("tdp013");
-      dbo.collection("Profile").findOne({LoginName: Username}, function (err, user) {
-        db.close();
-        done(err, user);
-      });
-    });
-  });
+    app.use(cors(corsOptions));
+
+
+
 
   app.get('/login', function(req, res, next) {
       passport.authenticate('local', function(err, user, info) {
@@ -68,8 +69,9 @@ const saltRounds = 10;
           if (!user) { return res.redirect('/login'); }
 
           req.login(user, (err) => {
+            console.log("Serialized user: " + req.session.passport.user)
             if(err) throw err;
-            console.log("Login Successfull!");
+            console.log("Logged in User: " + user.LoginName);
             return res.send(user.LoginName);
           });
       })(req, res, next) ;
@@ -164,13 +166,12 @@ const saltRounds = 10;
                 db.close();
             });
           });
-
-
         });
           res.redirect("/");
     });
 
     app.get('/getProfile', function(req, res){
+      console.log(req);
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
             dbo.collection('Profiles').aggregate([

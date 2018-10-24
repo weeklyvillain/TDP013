@@ -30,8 +30,7 @@ class Profile extends Component {
 	}
 
 	getProfile(){
-
-		axios.get("http://127.0.0.1:3001/getProfile",{params: {Username: this.props.match.url.substring(1)}})
+		axios.get("http://127.0.0.1:3001/getProfile", {params: {Username: this.props.match.url.substring(1)}, withCredentials: true})
 		.then(res => {
 			if(res.data.length === 0){
 				this.setState({notExist: true});
