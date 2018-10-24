@@ -36,6 +36,7 @@ class Profile extends Component {
 		.then(res => {
 			if(res.data.length === 0){
 				this.setState({notExist: true});
+				return;
 			}else{
 				const profile = res.data[0];
 				this.setState({profile: profile, posts: profile.Posts.reverse()})

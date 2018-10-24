@@ -8,53 +8,47 @@ class Login extends Component {
 	super(props);
 
 	this.state = {
-	  Username: "",
-	  Password: "",
-	  wrongComb: false,
-	  loggedIn: false,
-	  newDisplayName: "",
-	  newUsername: "",
-	  newPassword: "",
-	  newConfirmedPass: ""
+		Username: "",
+		Password: "",
+		wrongComb: false,
+		loggedIn: false,
+		newDisplayName: "",
+		newUsername: "",
+		newPassword: "",
+		newConfirmedPass: ""
 	};
 
 	this.updateUsername = this.updateUsername.bind(this);
 	this.updatePassword = this.updatePassword.bind(this);
 	this.submitData = this.submitData.bind(this);
 	this.disableInvalidLogin = this.disableInvalidLogin.bind(this);
+  	}
 
-  }
+  	disableInvalidLogin() {
+		return this.state.Username.length > 0 && this.state.Password.length > 0;
+  	}
 
-  disableInvalidLogin() {
-	return this.state.Username.length > 0 && this.state.Password.length > 0;
-  }
+	validateNewUser(){
+		return true;
+  	}
 
-  validateNewUser(){
-	  return true;
-  }
-
-  submitData(e) {
-	e.preventDefault();
-	axios.get('http://127.0.0.1:3001/login', {
-	params: {
-	  username: this.state.Username,
-	  password: this.state.Password
-	},
-  withCredentials: true
-	}).then(res => {
-    console.log(res);
-    if(res.data){
-      const result = res.data;
-      sessionStorage.setItem("LoginName", result);
-      this.setState({loggedIn: true})
-    }else{
-      console.log("Failure")
-      this.setState({wrongComb: true});
-    }
-
-
-	});
-  }
+	submitData(e) {
+		e.preventDefault();
+		axios.get('http://127.0.0.1:3001/login', {
+			params: {
+				username: this.state.Username,
+				password: this.state.Password
+			},
+  			withCredentials: true
+		}).then(res => {
+			const result = res.data;
+			sessionStorage.setItem("LoginName", result);
+			this.setState({loggedIn: true})
+		}).catch(err => {
+			console.log("Failure")
+			this.setState({wrongComb: true});
+		});
+	}
 
   updateUsername(e) {
 	e.preventDefault();
@@ -122,7 +116,7 @@ class Login extends Component {
 				</Button>
 				{this.state.wrongComb ? "Wrong Username/Password combination": ""}
 			  </form>
-			{/*
+			  <form>
 			  <FormGroup size="large">
 				<label>Or register please:</label>
 				<Input
@@ -163,8 +157,9 @@ class Login extends Component {
 				  Register
 				</Button>
 				</FormGroup>
-				*/}
-			</div>
+				</form>
+				</div>
+			
 		  )
 		  }
   }
