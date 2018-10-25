@@ -139,17 +139,41 @@ console.log("Deserializing user");
 
 
     app.get('/register', function(req, res){
-      MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-          bcrypt.hash(req.query.password, saltRounds, function(err, hashed_pass){
+        if(req.query.newDisplayName.length < 1 || req.query.newDisplayName.length > 32){
+            res.send("wrongLengthDisplayName");
+            return;
+        } 
+        if(req.query.newUsername.length < 6 || req.query.newUsername.length > 20){
+            res.send("wrongLengthUsername");
+            return;
+        }
+        if(req.query.newPassword.length < 8 && req.query.newPassword.length > 24){
+            res.send("wrongLengthPassword");
+            return;
+        }
+        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
-
-            var userObj = { LoginName : req.query.username, Password : hashed_pass }
-            dbo.collection("Users").insertOne(userObj, function(err, result) {
-                db.close();
+            var myQuery = { LoginName : req.query.newUsername}
+            dbo.collection("Users").findOne(myQuery, function(err, result){
+                if(result !== null){
+                    res.send("notUniqueLoginName");
+                    return;
+                }else{
+                    bcrypt.hash(req.query.newPassword, saltRounds, function(err, hashed_pass){
+                        var userObj = { LoginName : req.query.newUsername, Password : hashed_pass };
+                        dbo.collection("Users").insertOne(userObj, function(err, result) {
+                            dbo.collection("Users").findOne({LoginName: req.query.newUsername}, function(err, result){
+                                var profileObj = { userId: ObjectId(result._id), LoginName: result.LoginName, DisplayName: req.query.newDisplayName, FriendsList: [] }
+                                dbo.collection("Profiles").insertOne(profileObj, function(err, result){
+                                    res.send("success");
+                                    return;
+                                });
+                            });
+                         });
+                    });
+                }
             });
-          });
         });
-          res.redirect("/");
     });
 
     app.get('/getProfile', function(req, res){
@@ -177,8 +201,6 @@ console.log("Deserializing user");
 
     });
 
-    //app.get('/removePost', function(req, res){});
-
     app.get('/addFriend', function(req, res){
         console.log(req.isAuthenticated())
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
@@ -202,10 +224,6 @@ console.log("Deserializing user");
             }
         });
     });
-
-    //app.get('/removeFriend', function(req, res){});
-
-    //app.get('/editProfile', function(req, res){});
 
     app.get('/search', function(req, res){
       MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {

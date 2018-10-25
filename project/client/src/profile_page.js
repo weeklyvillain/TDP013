@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, ListGroup, ListGroupItem, InputGroup, InputGroupAddon, Input, Navbar, NavbarBrand, NavItem, NavLink, Nav} from 'reactstrap';
+import { Button, ListGroup, ListGroupItem, InputGroup, InputGroupAddon, Input} from 'reactstrap';
 import {Redirect}  from "react-router-dom";
 import './profile_page.css';
 import Nav_bar from './NavBar';

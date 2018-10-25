@@ -57,7 +57,7 @@ class NavBar extends Component {
   render() {
       return (
         <Navbar color="light" expand="md">
-        <NavbarBrand href="/">witter</NavbarBrand>
+        <NavbarBrand href="/">Wittier</NavbarBrand>
           <Nav className="ml-auto" navbar>
           <NavItem>
           <form id="searchForm" onSubmit={this.sendData}>
