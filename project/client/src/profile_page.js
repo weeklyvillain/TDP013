@@ -11,7 +11,9 @@ class Profile extends Component {
 
 		this.state = {
 				data: '',
-				profile:{LoginName: "", DisplayName: "", FriendsList:{}},
+				LoginName: "",
+				DisplayName: "",
+				FriendsList: [],
 				posts: [],
 				notExist: false,
 				loggedIn: true
@@ -23,7 +25,10 @@ class Profile extends Component {
 		this.getProfile = this.getProfile.bind(this);
 		this.updateFeed = this.updateFeed.bind(this);
 		this.logout = this.logout.bind(this);
+		this.updateFriendsList = this.updateFriendsList.bind(this);
 	};
+
+	
 
 	logout(e){
 		e.preventDefault();
@@ -39,19 +44,26 @@ class Profile extends Component {
 				return;
 			}else{
 				const profile = res.data[0];
-				this.setState({profile: profile, posts: profile.Posts.reverse()})
+				this.setState({LoginName: profile.LoginName, DisplayName: profile.DisplayName, FriendsList: profile.FriendsList, posts: profile.Posts.reverse()})
 				return;
 			}
 
 			
 		}).catch(err => {
-			console.log("hej");
 			this.setState({loggedIn: false})
 		});
 	}
 
+	updateFriendsList(){
+		axios.get("http://127.0.0.1:3001/getFriendsList", {withCredentials: true})
+		.then(res => {
+			const friends = res.data;
+			this.setState({FriendsList: friends});
+		});
+	}
+
 	updateFeed(){
-		axios.get("http://127.0.0.1:3001/getAll",{params: {UserPage: this.state.profile.LoginName}})
+		axios.get("http://127.0.0.1:3001/getAll",{params: {UserPage: this.state.LoginName}})
 		.then(res => {
 			const responses = res.data;
 			this.setState({posts:responses.reverse()});
@@ -76,9 +88,9 @@ class Profile extends Component {
 				url:'http://127.0.0.1:3001/save',
 				params: {
 					message: this.state.data,
-					UserPage: this.state.profile.LoginName,
+					UserPage: this.state.LoginName,
 					UserPosted: sessionStorage.getItem('LoginName'),
-					Flag: (sessionStorage.getItem('LoginName') === this.state.profile.LoginName)? 1 : 0
+					Flag: (sessionStorage.getItem('LoginName') === this.state.LoginName)? 1 : 0
 				}
 		});
 		this.updateFeed();
@@ -86,7 +98,7 @@ class Profile extends Component {
 	}
 
 	flag(e) {
-		if(sessionStorage.getItem('LoginName') !== this.state.profile.LoginName){
+		if(sessionStorage.getItem('LoginName') !== this.state.LoginName){
 			return;
 		}
 		e.preventDefault();
@@ -107,9 +119,9 @@ class Profile extends Component {
 		}else{
 			return (
 				<div>
-			<Nav_bar />
+			<Nav_bar updateFriendsList = {this.updateFriendsList} />
 			
-			<h4>Welcome to {sessionStorage.getItem('LoginName') === this.state.profile.LoginName ? (" your home"):(" " + this.state.profile.DisplayName + "s ")}page!</h4>
+			<h4>Welcome to {sessionStorage.getItem('LoginName') === this.state.LoginName ? (" your home"):(" " + this.state.DisplayName + "s ")}page!</h4>
 
 
 					<div className = "Input">
@@ -142,13 +154,13 @@ class Profile extends Component {
 	}
 
 	printFriendsList(){
-		if (sessionStorage.getItem('LoginName') === this.state.profile.LoginName){
+		if (sessionStorage.getItem('LoginName') === this.state.LoginName){
 			return(<ListGroup id="friendlist">
 			<ListGroupItem color="success"><h2>Friendlist</h2></ListGroupItem>
 			{
-				Object.keys(this.state.profile.FriendsList).length === 0 ?
+				Object.keys(this.state.FriendsList).length === 0 ?
 				(<ListGroupItem color="info">You do not seem to have any friends!</ListGroupItem>) :
-				(this.state.profile.FriendsList.map((friend) => <ListGroupItem color="info" key={friend}><a href={friend[0]}>{friend[1]}</a></ListGroupItem>))
+				(this.state.FriendsList.map((friend) => <ListGroupItem color="info" key={friend}><a href={friend[0]}>{friend[1]}</a></ListGroupItem>))
 			}
 		</ListGroup>
 			);

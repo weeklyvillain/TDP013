@@ -30,7 +30,6 @@ class NavBar extends Component {
 
   sendData(e) {
       e.preventDefault();
-      console.log(this.state.username);
       axios.get('http://127.0.0.1:3001/search', {
       params: {
         searchedName: this.state.username
@@ -50,8 +49,15 @@ class NavBar extends Component {
     },
      withCredentials: true
   }).then(res => {
+    if(res.data === "success"){ 
+      this.props.updateFriendsList();
+      return;
+    }else{
+      alert("Friend Already Added!");
+    }
 
   });
+
   }
 
   render() {

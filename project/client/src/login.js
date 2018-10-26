@@ -49,9 +49,13 @@ class Login extends Component {
 				newPassword: this.state.newPassword
 			}
 		}).then(res => {
-			console.log("testing");
-			const result = res.data;
-			console.log(result);
+			if(res.data === "success"){
+				alert("Successfull Registration! Please login!");
+			}else{
+				alert(res.data);
+			}
+			
+			
 
 		});
 	}

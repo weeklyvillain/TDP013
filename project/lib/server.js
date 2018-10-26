@@ -174,11 +174,10 @@ console.log("Deserializing user");
                 }
             });
         });
-    });
+    }); 
 
     app.get('/getProfile', function(req, res){
         if(req.isAuthenticated()){
-            
             MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
                 var dbo = db.db("tdp013");
                 dbo.collection('Profiles').aggregate([
@@ -195,34 +194,36 @@ console.log("Deserializing user");
                 });
             });
         }else{
-            console.log("Not logged in")
-            res.status(400).send("Not logged in!");
+            res.send("Not logged in!");
         }
+    });
 
+    app.get('/getFriendsList', function(req, res){
+        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+            var dbo = db.db("tdp013");
+            dbo.collection('Profiles').findOne({LoginName: req.user.LoginName}, function(err, result){
+                res.send(result.FriendsList);
+                return;
+            });
+        });
     });
 
     app.get('/addFriend', function(req, res){
-        console.log(req.isAuthenticated())
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-            var counter = 0;
             var dbo = db.db("tdp013");
             dbo.collection("Profiles").updateOne({LoginName: req.user.LoginName}, {$addToSet :  { FriendsList: [req.query.FriendLoginName, req.query.FriendDisplayName ]}}, function(err, result) {
-                db.close();
-                if(result.result.nModified == 0){
-                    counter++;
-                }
+                dbo.collection("Profiles").updateOne({LoginName: req.query.FriendLoginName}, {$addToSet :  { FriendsList: [req.user.LoginName, req.user.DisplayName ]}}, function(err, result) {
+                    if(result.result.nModified != 0){
+                        res.send("success");
+                        return;
+                    }else{
+                        res.send("failure");
+                        return;
+                    }
+                });
             });
-            dbo.collection("Profiles").updateOne({LoginName: req.query.FriendLoginName}, {$addToSet :  { FriendsList: [req.user.LoginName, req.user.DisplayName ]}}, function(err, result) {
-                db.close();
-                if(result.result.nModified == 0){
-                    counter++;
-                }
-            });
-            if(counter > 0 ){
-                res.status(400).send("Something went wrong!");
-                return;
-            }
         });
+        return;  
     });
 
     app.get('/search', function(req, res){
