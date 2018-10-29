@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "nyc mocha --exit & python3 selenium_test.py"
+    "test": "nyc mocha --exit && python3 selenium_test.py"
   },
   "author": "",
   "license": "ISC",
