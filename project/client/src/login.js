@@ -50,7 +50,7 @@ class Login extends Component {
 			}
 		}).then(res => {
 			if(res.data === "success"){
-				alert("Successfull Registration! Please login!");
+				alert("Successful Registration! Please login!");
 			}else{
 				alert(res.data);
 			}
@@ -133,6 +133,7 @@ class Login extends Component {
 				<FormGroup size="large">
 				  <Label>Log in!</Label>
 				  <Input
+					id='loginUsername'
 					autoFocus
 					placeholder="Username"
 					type="username"
@@ -141,6 +142,7 @@ class Login extends Component {
 				  />
 				  <br></br>
 				  <Input
+					id='loginPassword'
 				  	placeholder="Password"
 					value={this.state.Password}
 					onChange={this.updatePassword}
@@ -148,10 +150,11 @@ class Login extends Component {
 				  />
 				</FormGroup>
 				<Button
-				  block
-				  size="large"
-				  disabled={!this.disableInvalidLogin()}
-				  type="submit"
+					id='loginSubmit'
+				  	block
+				  	size="large"
+				  	disabled={!this.disableInvalidLogin()}
+				  	type="submit"
 				>
 				  Login
 				</Button>
@@ -163,6 +166,7 @@ class Login extends Component {
 			  <FormGroup size="large">
 				<label>Or register please:</label>
 					<Input
+					id='registerDisplayName'
 					placeholder="Your New Display Name"
 					type="username"
 					value={this.state.newDisplayName}
@@ -172,6 +176,7 @@ class Login extends Component {
 
 				  <br></br>
 				  <Input
+				  	id='registerUsername'
 					placeholder="Your New Username"
 					type="username"
 					value={this.state.newUsername}
@@ -180,6 +185,7 @@ class Login extends Component {
 				  />
 				  <br></br>
 					<Input
+						id='registerPassword'
 						placeholder="Your New Password"
 					value={this.state.newPassword}
 					onChange={this.updateNewPassword}
@@ -188,14 +194,16 @@ class Login extends Component {
 				  />
 				  <br></br>
 					<Input
+						id='registerConfirmedPassword'
 						placeholder="Please Confirm Your New Password"
-					value={this.state.newConfirmedPass}
-					onChange={this.updateNewConfirmedPassword}
-					type="password"
-					required minLength="8" maxLength="24"
-				  />
+						value={this.state.newConfirmedPass}
+						onChange={this.updateNewConfirmedPassword}
+						type="password"
+						required minLength="8" maxLength="24"
+					/>
 				<br></br>
 				<Button
+					id='registerSubmit'
 				  block
 				  size="large"
 				  disabled={!this.validateNewUser()}
