@@ -7,10 +7,14 @@ var MongoClient = require('mongodb').MongoClient;
 
 MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
     var dbo = db.db("tdp013");
-    dbo.collection("Posts").drop(function(err, result) {
-          db.close();
-      });
+    dbo.collection("Users").drop(function(err, result) {
+        dbo.collection("Profiles").drop(function(err, result) {
+            dbo.collection("Posts").drop(function(err, result) {
+                db.close();
+            });
+        });
     });
+});
 
   describe('Error handling', function() {
       it('should test status 200', function(done){
@@ -73,6 +77,154 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
 
 
   describe('MongoDB', function(){
+      it('should test to add user to database', function(done) {
+        chai.request(app)
+          .get('/register')
+          .query({newUsername: "testUser",
+                  newPassword: "TestPassword123",
+                  newDisplayName: "Some random user"})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+      it('should test to add existing user to database', function(done) {
+        chai.request(app)
+          .get('/register')
+          .query({newUsername: "testUser",
+                  newPassword: "TestPassword123",
+                  newDisplayName: "Some random user"})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+      it('should test to add user with bad username to database', function(done) {
+        chai.request(app)
+          .get('/register')
+          .query({newUsername: "user",
+                  newPassword: "TestPassword123",
+                  newDisplayName: "Some random user"})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+
+      it('should test to add user with bad password to database', function(done) {
+        chai.request(app)
+          .get('/register')
+          .query({newUsername: "testUser",
+                  newPassword: "short",
+                  newDisplayName: "Some random user"})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+
+      it('should test to add user with bad DisplayName to database', function(done) {
+        chai.request(app)
+          .get('/register')
+          .query({newUsername: "testUser",
+                  newPassword: "TestPassword123",
+                  newDisplayName: ""})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+      it('should test to add another user to database', function(done) {
+          chai.request(app)
+          .get('/register')
+          .query({newUsername: "User1234",
+          newPassword: "TestPassword123",
+          newDisplayName: "Random user"})
+          .end(function(err, res) {
+              expect(res).to.have.status(200);
+              setTimeout(done, 50);
+          });
+      });
+
+      it('should test to login with created test user', function(done) {
+        chai.request(app)
+          .get('/login')
+          .query({username: "testUser",
+                  password: "TestPassword123"})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+  });
+describe('Test user funcs', function(){
+        before(function(done){
+          chai.request(app)
+            .get('/login')
+            .query({username: "testUser",
+                    password: "TestPassword123"})
+            .end(function(err, response){
+              expect(response.statusCode).to.equal(200);
+              setTimeout(done, 50);
+            });
+        });
+
+
+      it('should test to get profile', function(done) {
+        chai.request(app)
+          .get('/getProfile')
+          .query({profilePage: "testUser"})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+      it('should test to get friends', function(done) {
+        chai.request(app)
+          .get('/getFriendsList')
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+      it('should test to add friend', function(done) {
+        chai.request(app)
+          .get('/addFriend')
+          .query({FriendDisplayName: "Random user",
+                    FriendLoginName: "User1234"})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+      it('should test to add friend', function(done) {
+        chai.request(app)
+          .get('/getAll')
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          });
+      });
+
+      it('should test save', function(done) {
+        chai.request(app)
+          .get('/search')
+          .query({searchedName: 'Random user'})
+          .end(function(err, res) {
+            expect(res).to.have.status(200);
+            setTimeout(done, 50);
+          })
+      });
+
       it('should test save', function(done) {
         chai.request(app)
           .get('/save')
@@ -148,7 +300,9 @@ MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, func
         .query({id: jsonObj[0]['_id']})
         .end(function(err, res) {
           expect(res).to.have.status(400);
-          done();
+          setTimeout(done, 50);
         });
     });
+
+
 });

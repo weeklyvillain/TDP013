@@ -83,7 +83,7 @@ console.log("Deserializing user");
         res.status(200).send();
     });
 
-    app.get('/getall', function(req, res){
+    app.get('/getAll', function(req, res){
         MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
             var dbo = db.db("tdp013");
             dbo.collection("Posts").find({UserPage: req.query.UserPage}).toArray(function(err, result) {
@@ -142,7 +142,7 @@ console.log("Deserializing user");
         if(req.query.newDisplayName.length < 1 || req.query.newDisplayName.length > 32){
             res.send("wrongLengthDisplayName");
             return;
-        } 
+        }
         if(req.query.newUsername.length < 6 || req.query.newUsername.length > 20){
             res.send("wrongLengthUsername");
             return;
@@ -174,7 +174,7 @@ console.log("Deserializing user");
                 }
             });
         });
-    }); 
+    });
 
     app.get('/getProfile', function(req, res){
         if(req.isAuthenticated()){
@@ -199,31 +199,38 @@ console.log("Deserializing user");
     });
 
     app.get('/getFriendsList', function(req, res){
-        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-            var dbo = db.db("tdp013");
-            dbo.collection('Profiles').findOne({LoginName: req.user.LoginName}, function(err, result){
-                res.send(result.FriendsList);
-                return;
+        if(req.isAuthenticated()){
+            MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+                var dbo = db.db("tdp013");
+                dbo.collection('Profiles').findOne({LoginName: req.user.LoginName}, function(err, result){
+                    res.send(result.FriendsList);
+                    return;
+                });
             });
-        });
+        } else {
+            res.send("Not logged in!");
+        }
     });
 
     app.get('/addFriend', function(req, res){
-        MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
-            var dbo = db.db("tdp013");
-            dbo.collection("Profiles").updateOne({LoginName: req.user.LoginName}, {$addToSet :  { FriendsList: [req.query.FriendLoginName, req.query.FriendDisplayName ]}}, function(err, result) {
-                dbo.collection("Profiles").updateOne({LoginName: req.query.FriendLoginName}, {$addToSet :  { FriendsList: [req.user.LoginName, req.user.DisplayName ]}}, function(err, result) {
-                    if(result.result.nModified != 0){
-                        res.send("success");
-                        return;
-                    }else{
-                        res.send("failure");
-                        return;
-                    }
+        if(req.isAuthenticated()){
+            MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
+                var dbo = db.db("tdp013");
+                dbo.collection("Profiles").updateOne({LoginName: req.user.LoginName}, {$addToSet :  { FriendsList: [req.query.FriendLoginName, req.query.FriendDisplayName ]}}, function(err, result) {
+                    dbo.collection("Profiles").updateOne({LoginName: req.query.FriendLoginName}, {$addToSet :  { FriendsList: [req.user.LoginName, req.user.DisplayName ]}}, function(err, result) {
+                        if(result.result.nModified != 0){
+                            res.send("success");
+                            return;
+                        }else{
+                            res.send("failure");
+                            return;
+                        }
+                    });
                 });
             });
-        });
-        return;  
+        } else {
+            res.send("Not logged in!");
+        }
     });
 
     app.get('/search', function(req, res){
