@@ -129,8 +129,8 @@ class Profile extends Component {
 
 							<InputGroup>
 					        <InputGroupAddon addonType="prepend">Message:</InputGroupAddon>
-					        <Input value = {this.state.data} onChange = {this.updateCounter} />
-									<InputGroupAddon addonType="append"><Button color = "primary" type='submit'>Post</Button></InputGroupAddon>
+					        <Input value = {this.state.data} onChange = {this.updateCounter} id='postForm' />
+									<InputGroupAddon addonType="append"><Button color = "primary" type='submit' id='postSubmit'>Post</Button></InputGroupAddon>
 								</InputGroup>
 								{this.state.data.length}/140
 

@@ -158,7 +158,7 @@ class Login extends Component {
 				>
 				  Login
 				</Button>
-				{this.state.wrongComb ? "Wrong Username/Password combination": ""}
+				<p style={{color:"red"}} id="wrongComb">{this.state.wrongComb ? "Wrong Username/Password combination": ""}</p>
 			  </form>
 
 

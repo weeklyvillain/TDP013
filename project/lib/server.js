@@ -32,12 +32,10 @@ passport.use(new LocalStrategy(
 ));
 
 passport.serializeUser(function(user, done) {
-    console.log("Serializing user");
     done(null, user.LoginName);
 });
 
 passport.deserializeUser(function(Username, done) {
-console.log("Deserializing user");
     MongoClient.connect("mongodb://localhost:27017", { useNewUrlParser: true }, function (err, db) {
         var dbo = db.db("tdp013");
         dbo.collection("Profiles").findOne({LoginName: Username}, function (err, user) {
@@ -66,9 +64,7 @@ console.log("Deserializing user");
           if (!user) { return res.redirect('/login'); }
 
           req.login(user, (err) => {
-            console.log("Serialized user: " + req.session.passport.user)
             if(err) throw err;
-            console.log("Logged in User: " + user.LoginName);
             return res.send(user.LoginName);
           });
       })(req, res, next) ;
