@@ -40,6 +40,7 @@ class Login extends Component {
 			return false; 
 		}
 	}
+	
 	registerUser(e){
 		e.preventDefault();
 		axios.get('http://127.0.0.1:3001/register', {
@@ -59,6 +60,7 @@ class Login extends Component {
 
 		});
 	}
+
 	submitData(e) {
 		e.preventDefault();
 		axios.get('http://127.0.0.1:3001/login', {
@@ -70,6 +72,7 @@ class Login extends Component {
 		}).then(res => {
 			const result = res.data;
 			sessionStorage.setItem("LoginName", result);
+			sessionStorage.setItem("LoggedIn", true);
 			this.setState({loggedIn: true})
 		}).catch(err => {
 			console.log("Failure")
@@ -123,100 +126,96 @@ class Login extends Component {
 
 
 	render() {
-		if(this.state.loggedIn) {
-	  		return (
-		  		<Redirect to={{pathname: sessionStorage.getItem("LoginName")}}/>)
-	  	}else{
+		if(sessionStorage.getItem("LoggedIn")) {
+			return (<Redirect to={{pathname: sessionStorage.getItem("LoginName")}}/>)
+		}else{
 			return(
-			<div className="Login">
-				<form onSubmit={this.submitData}>
-				<FormGroup size="large">
-				  <Label>Log in!</Label>
-				  <Input
-					id='loginUsername'
-					autoFocus
-					placeholder="Username"
-					type="username"
-					value={this.state.Username}
-					onChange={this.updateUsername}
-				  />
-				  <br></br>
-				  <Input
-					id='loginPassword'
-				  	placeholder="Password"
-					value={this.state.Password}
-					onChange={this.updatePassword}
-					type="password"
-				  />
-				</FormGroup>
-				<Button
-					id='loginSubmit'
-				  	block
-				  	size="large"
-				  	disabled={!this.disableInvalidLogin()}
-				  	type="submit"
-				>
-				  Login
-				</Button>
-				<p style={{color:"red"}} id="wrongComb">{this.state.wrongComb ? "Wrong Username/Password combination": ""}</p>
-			  </form>
-
-
-			  <form onSubmit={this.registerUser}>
-			  <FormGroup size="large">
-				<label>Or register please:</label>
-					<Input
-					id='registerDisplayName'
-					placeholder="Your New Display Name"
-					type="username"
-					value={this.state.newDisplayName}
-					onChange={this.updateNewDisplayName}
-				  	required minLength="1" maxLength="32"
-					/>
-
-				  <br></br>
-				  <Input
-				  	id='registerUsername'
-					placeholder="Your New Username"
-					type="username"
-					value={this.state.newUsername}
-					onChange={this.updateNewUsername}
-					required minLength="6" maxLength="20"
-				  />
-				  <br></br>
-					<Input
-						id='registerPassword'
-						placeholder="Your New Password"
-					value={this.state.newPassword}
-					onChange={this.updateNewPassword}
-					type="password"
-					required minLength="8" maxLength="24"
-				  />
-				  <br></br>
-					<Input
-						id='registerConfirmedPassword'
-						placeholder="Please Confirm Your New Password"
-						value={this.state.newConfirmedPass}
-						onChange={this.updateNewConfirmedPassword}
-						type="password"
-						required minLength="8" maxLength="24"
-					/>
-				<br></br>
-				<Button
-					id='registerSubmit'
-				  block
-				  size="large"
-				  disabled={!this.validateNewUser()}
-				  type="submit"
-				>
-				  Register
-				</Button>
-				</FormGroup>
-				</form>
+				<div className="Login">
+					<form onSubmit={this.submitData}>
+						<FormGroup size="large">
+							<Label>Log in!</Label>
+							<Input
+								id='loginUsername'
+								autoFocus
+								placeholder="Username"
+								type="username"
+								value={this.state.Username}
+								onChange={this.updateUsername}
+							/>
+							<br></br>
+							<Input
+								id='loginPassword'
+								placeholder="Password"
+								value={this.state.Password}
+								onChange={this.updatePassword}
+								type="password"
+							/>
+						</FormGroup>
+						<Button
+							id='loginSubmit'
+							block
+							size="large"
+							disabled={!this.disableInvalidLogin()}
+							type="submit"
+						>
+							Login
+						</Button>
+						<p style={{color:"red"}} id="wrongComb">{this.state.wrongComb ? "Wrong Username/Password combination": ""}</p>
+					</form>
+					<form onSubmit={this.registerUser}>
+						<FormGroup size="large">
+							<label>Or register please:</label>
+							<Input
+								id='registerDisplayName'
+								placeholder="Your New Display Name"
+								type="username"
+								value={this.state.newDisplayName}
+								onChange={this.updateNewDisplayName}
+								required minLength="1" maxLength="32"
+							/>
+							<br></br>
+							<Input
+								id='registerUsername'
+								placeholder="Your New Username"
+								type="username"
+								value={this.state.newUsername}
+								onChange={this.updateNewUsername}
+								required minLength="6" maxLength="20"
+							/>
+							<br></br>
+							<Input
+								id='registerPassword'
+								placeholder="Your New Password"
+								value={this.state.newPassword}
+								onChange={this.updateNewPassword}
+								type="password"
+								required minLength="8" maxLength="24"
+							/>
+							<br></br>
+							<Input
+								id='registerConfirmedPassword'
+								placeholder="Please Confirm Your New Password"
+								value={this.state.newConfirmedPass}
+								onChange={this.updateNewConfirmedPassword}
+								type="password"
+								required minLength="8" maxLength="24"
+							/>
+							<br></br>
+							<Button
+								id='registerSubmit'
+								block
+								size="large"
+								disabled={!this.validateNewUser()}
+								type="submit"
+							>
+								Register
+							</Button>
+						</FormGroup>
+					</form>
 				</div>
-			
-		  )
-		  }
-  }
+			)
+		}
+	}
 }
+
 export default Login;

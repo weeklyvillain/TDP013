@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Button, ListGroup, ListGroupItem, InputGroup, InputGroupAddon, Input} from 'reactstrap';
 import {Redirect}  from "react-router-dom";
 import './profile_page.css';
-import Nav_bar from './NavBar';
+import NavBar from './NavBar';
 const axios = require('axios');
 
 class Profile extends Component {
@@ -24,17 +24,8 @@ class Profile extends Component {
 		this.flag = this.flag.bind(this);
 		this.getProfile = this.getProfile.bind(this);
 		this.updateFeed = this.updateFeed.bind(this);
-		this.logout = this.logout.bind(this);
 		this.updateFriendsList = this.updateFriendsList.bind(this);
 	};
-
-	
-
-	logout(e){
-		e.preventDefault();
-		sessionStorage.clear();
-		this.setState({LoginName: ""});
-	}
 
 	getProfile(){
 		axios.get("http://127.0.0.1:3001/getProfile", {params: {profilePage: this.props.match.url.substring(1)}, withCredentials: true})
@@ -72,7 +63,6 @@ class Profile extends Component {
 	componentWillMount() {
 		this.getProfile();
 	}
-
 
 	updateCounter(e) {
 		e.preventDefault();
@@ -113,13 +103,12 @@ class Profile extends Component {
 	}
 
 	checkExists(){
-
 		if(this.state.notExist === true){
 			return ("Hm... there does not seem to be anything here"  );
 		}else{
 			return (
 				<div>
-			<Nav_bar updateFriendsList = {this.updateFriendsList} />
+			<NavBar updateFriendsList = {this.updateFriendsList} />
 			
 			<h4>Welcome to {sessionStorage.getItem('LoginName') === this.state.LoginName ? (" your home"):(" " + this.state.DisplayName + "s ")}page!</h4>
 
@@ -183,6 +172,5 @@ class Profile extends Component {
 
 	}
 }
-
 
 export default Profile;
