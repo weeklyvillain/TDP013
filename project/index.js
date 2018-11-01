@@ -2,7 +2,7 @@ var app = require('./lib/server');
 
 function server_start(){
     var server = app.listen(3001, function () {
-      console.log("Server runnning");
+      console.log("Server running");
     });
 };
 

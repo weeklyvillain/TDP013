@@ -84,12 +84,10 @@ class Login extends Component {
 		e.preventDefault();
 		this.setState({Username: e.target.value});
   	}
-
   	updatePassword(e) {
 		e.preventDefault();
 		this.setState({Password: e.target.value});
 	}
-	
 	updateNewUsername(e) {
 		e.preventDefault();
 		this.setState({newUsername: e.target.value});
@@ -107,7 +105,6 @@ class Login extends Component {
 		this.setState({newConfirmedPassword: e.target.value});
 	}
 
-
 	addUser(e){
 		e.preventDefault();
 		axios.get('http://127.0.0.1:3001/register', {
@@ -122,8 +119,6 @@ class Login extends Component {
 			this.setState({loggedIn: true});
 		});
 	}
-
-
 
 	render() {
 		if(sessionStorage.getItem("LoggedIn")) {

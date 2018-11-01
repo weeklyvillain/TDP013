@@ -111,6 +111,7 @@ class WittierTests(unittest.TestCase):
 
     def test_10_add_friend_success(self): #Testing whether the add friend function works
         self.driver.find_elements_by_xpath("//*[contains(text(), 'Add Friend')]")[0].click()
+        time.sleep(1)
         self.assertEqual(len(self.driver.find_elements_by_xpath("//*[contains(., 'You do not seem to have any friends!')]")), 0)
 
     def test_11_add_friend_fail(self): #Testing whether you can add a friend more than one time
